@@ -1,0 +1,8 @@
+/firmware/.cache/
+/firmware/build/
+/.git.old/
+/firmware/src/inc/
+/firmware/src/driverlib
+/copyrighted info/
+/pcb/pcb-backups/
+/info/parts in schematic.xcf
