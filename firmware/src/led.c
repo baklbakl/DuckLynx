@@ -64,11 +64,11 @@ void setupLedPWMTimer(const uint32_t baseAddress, const REGISTER_GPTM_TIMER time
         timerOffset <= ((timer & REGISTER_GPTM_TIMER_B) ? REGISTER_GPTM_TIMER_AB_OFFSET : 0);
         timerOffset += REGISTER_GPTM_TIMER_AB_OFFSET
     ) {
-        debugUART_printString("ran on timer. Baseaddress: ");
-        debugUART_printWordHex(baseAddress);
-        debugUART_printString(" offset: ");
-        debugUART_printWord(timerOffset);
-        debugUART_printChar('\n');
+        // debugUART_printString("ran on timer. Baseaddress: ");
+        // debugUART_printWordHex(baseAddress);
+        // debugUART_printString(" offset: ");
+        // debugUART_printWord(timerOffset);
+        // debugUART_printChar('\n');
 
         volatile uint32_t * const GPTMTAMR = (uint32_t *)(baseAddress + REGISTER_GPTM_GPTMTAMR_OFFSET + timerOffset);
         //Enable PWM mode by enabling the alternate mode and putting the timer in periodic mode
@@ -102,7 +102,7 @@ const uint8_t led_PINS = led_PIN_RED | led_PIN_GREEN | led_PIN_BLUE; //NOLINT(hi
 // volatile uint32_t * const led_GPIO_DATA = (uint32_t *)(REGISTER_GPIO_M_GPIODATA + (led_PINS << 2));
 
 
-int led_init(void) {
+int8_t led_init(void) {
     sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET, REGISTER_SYSCTL_PERIPHCTL_GPIO_PORTM_INSTANCEMASK);
     sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_WGPTM_OFFSET, REGISTER_SYSCTL_PERIPHCTL_WGPTM_0_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_WGPTM_5_INSTANCEMASK);
 
@@ -124,7 +124,7 @@ int led_init(void) {
     return 0;
 }
 
-void led_setColor(uint32_t red, uint32_t green, uint32_t blue) {
+void led_setColor(uint8_t red, uint8_t green, uint8_t blue) {
     *REGISTER_GPTM_W0_GPTMTAMATCHR = red;
     *REGISTER_GPTM_W0_GPTMTBMATCHR = green;
     *REGISTER_GPTM_W5_GPTMTBMATCHR = blue;

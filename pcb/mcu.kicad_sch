@@ -3960,10 +3960,10 @@
 		)
 		(uuid "cad879d1-371c-417f-a8dc-dc12a9742cbb")
 	)
-	(text_box "MCU Pins that have no '_<purpose>' indcates that they do not use an alternate function pins that have been checked and are just GPIOs: PF0 PF1\nGPIO Pins with a NC on the actually have a test point on the back and seem to go nowhere else."
+	(text_box "MCU Pins that have no '_<purpose>' indcates that they do not use an alternate function.\nGPIO Pins with a NC on the actually have a test point on the back and seem to go nowhere else."
 		(exclude_from_sim no)
-		(at 149.86 2.54 0)
-		(size 66.04 12.7)
+		(at 149.86 5.08 0)
+		(size 66.04 10.16)
 		(margins 0.9525 0.9525 0.9525 0.9525)
 		(stroke
 			(width 0)
@@ -3979,26 +3979,6 @@
 			(justify left top)
 		)
 		(uuid "60221256-6301-4985-9c48-e0cd1f216798")
-	)
-	(text_box "Check ports: B, C, F, J, K, L, M, N, P"
-		(exclude_from_sim no)
-		(at 78.74 55.88 0)
-		(size 12.7 17.78)
-		(margins 0.9525 0.9525 0.9525 0.9525)
-		(stroke
-			(width 0)
-			(type solid)
-		)
-		(fill
-			(type none)
-		)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left top)
-		)
-		(uuid "984c6d8c-0c64-4833-bb3a-532b4d75edae")
 	)
 	(junction
 		(at 219.71 156.21)

@@ -39,7 +39,7 @@
 //<register from above>_<field name>_MASK
 //Bitwise shift of a value to line up in the field.  Ex. REGISTER_SYSCTL_RCC_XTAL_SHIFT 
 //<register from above>_<field name>_SHIFT
-//A specific configuration of a field. Ex. REGISTER_SYSCTL_RCC_XTAL_16MHZ
+//A specific configuration of a field. Ex. REGISTER_SYSCTL_RCC_XTAL_16MHZ. Should be shifted to the correct location
 //<register from above>_<field name>_<configuration name>
 
 #include <stdint.h>
@@ -54,16 +54,13 @@ static const uint32_t REGISTER_SYSCTL_BASE = 0x400FE000;
 static const uint8_t REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET = 0x08;
 static const uint8_t REGISTER_SYSCTL_PERIPHCTL_UART_OFFSET = 0x18;
 
-
 //
 // GPIO
 //
 
 static const uint32_t REGISTER_GPIO_BASE = 0x40004000;
 
-static const uint32_t REGISTER_GPIO_GPIODEN_OFFSET = 0x51C;
-
-static const uint8_t REGISTER_GPIO_PIN_0 = 0b00000000;
+static const uint8_t REGISTER_GPIO_PIN_0 = 0b00000001;
 static const uint8_t REGISTER_GPIO_PIN_1 = 0b00000010;
 static const uint8_t REGISTER_GPIO_PIN_2 = 0b00000100;
 static const uint8_t REGISTER_GPIO_PIN_3 = 0b00001000;
@@ -72,11 +69,17 @@ static const uint8_t REGISTER_GPIO_PIN_5 = 0b00100000;
 static const uint8_t REGISTER_GPIO_PIN_6 = 0b01000000;
 static const uint8_t REGISTER_GPIO_PIN_7 = 0b10000000;
 
+static const uint32_t REGISTER_GPIO_GPIODEN_OFFSET = 0x51C;
+
+static const uint32_t REGISTER_GPIO_GPIOPCTL_UART = 0x1;
+
 //
 // UART
 //
 static const uint32_t REGISTER_UART_BASE = 0x4000C000; 
-static const uint32_t REGISTER_GPIO_GPIOPCTL_UART = 0x1;
+static const uint32_t REGISTER_UART_0_BASE = REGISTER_UART_BASE + 0x0;
+
+static const uint32_t REGISTER_UART_UARTDR_OFFSET = 0;
 
 //
 // EEPROM

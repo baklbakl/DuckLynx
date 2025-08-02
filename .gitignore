@@ -5,4 +5,5 @@
 /firmware/src/driverlib
 /copyrighted info/
 /pcb/pcb-backups/
+/firmware/openocd\ configs
 /info/parts in schematic.xcf

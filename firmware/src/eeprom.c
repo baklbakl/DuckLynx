@@ -20,12 +20,8 @@ volatile uint32_t * const REGISTER_EEPROM_EESUPP = (uint32_t *)(REGISTER_EEPROM_
 const uint32_t REGISTER_EEPROM_EESUPP_ERETRY = 0b1 << 2;
 const uint32_t REGISTER_EEPROM_EESUPP_PRETRY = 0b1 << 3;
 
-int eeprom_init(void) {
+int8_t eeprom_init(void) {
     sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_EEPROM_OFFSET, REGISTER_SYSCTL_PERIPHCTL_EEPROM_INSTANCEMASK);
-
-    // ROM_SysCtlPeripheralEnable(SYSCTL_PERIPH_EEPROM0);
-    // while(!ROM_SysCtlPeripheralReady(SYSCTL_PERIPH_EEPROM0)) {
-    // }
 
     //Wait for the EEPROM to finish working
     while (*REGISTER_EEPROM_EEDONE & REGISTER_EEPROM_EEDONE_WORKING) {}
@@ -53,20 +49,6 @@ int eeprom_init(void) {
         return 2;
     }
 
-    // return 0;
-
-    // uint32_t eepromStatus = EEPROMInit();
-
-    // if(eepromStatus == EEPROM_INIT_OK) {
-        // return 0;
-    // } 
-    
-    // if(eepromStatus == EEPROM_INIT_ERROR) {
-        // return 1;
-    // } 
-    
-    // return 2;
-
     return 0;
     
 }
@@ -87,7 +69,7 @@ uint8_t eeprom_getAddress(void) {
     return (*REGISTER_EEPROM_EERDWR);
 }
 
-int eeprom_dump(void) {
+int8_t eeprom_dump(void) {
     debugUART_printString("Eeprom dump started\n");
 
     //Set the block and offset to zero

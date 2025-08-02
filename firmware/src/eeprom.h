@@ -2,8 +2,8 @@
 #define EEPROM_H
 
 #include <stdint.h>
-int eeprom_init(void);
-int eeprom_dump(void);
+int8_t eeprom_init(void);
+int8_t eeprom_dump(void);
 uint8_t eeprom_getAddress(void);
 
 #endif

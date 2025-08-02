@@ -4734,7 +4734,7 @@
 		)
 		(uuid "3ba188bb-118e-4a17-970b-ea110e675414")
 	)
-	(text_box "Pin 6 on the header and the source of Q15 seems to be left floating at about 0.9V. Because the gate is only 1.8V it doesn't turn Q16 on and PJ6 (an input) is never be pulled down even when OE goes low. Am I missing a ground connection here?"
+	(text_box "Pin 6 on the header and the source of Q15 seems to be left floating at about 0.9V. Because the gate is only 1.8V it doesn't turn Q15 on and PJ6 (an input) is never be pulled down even when OE goes low. Am I missing a ground connection here?"
 		(exclude_from_sim no)
 		(at 231.14 137.16 0)
 		(size 25.4 27.94)

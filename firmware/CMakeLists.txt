@@ -28,8 +28,8 @@ set(SRC_FILES
         src/debug.c
         src/gpio.c
         src/rhsp.c
-        src/rhspUART.c
-        src/UART.c
+        src/uart.c
+        src/dma.c
 
         # src/driverlib/adc.c
         # # src/driverlib/aes.c

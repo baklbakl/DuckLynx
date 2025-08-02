@@ -1,10 +1,16 @@
 # DuckLynx
 ## Programming
 Connect to debug serial `picocom -b 115200 --imap lfcrlf --echo /dev/ttyUSB1`  
-Program chip `openocd -f info/openocd_configs/ftdi_lynx.cfg -c "program /home/polarbub/Documents/saves/code/c/expansionHubFW/build/expansionHubFW.bin reset; shutdown"`  
+Program chip `openocd -f info/openocd_configs/ftdi_lynx.cfg -c "program /home/polarbub/Documents/saves/hardware/lynx/firmware/build/expansionHubFW.bin reset; shutdown"`  
 Read flash `openocd -f info/openocd_configs/ftdi_lynx.cfg -c "flash read_bank 0 /home/polarbub/Documents/saves/code/c/expansionHubFW/info/readLynxFW.bin; shutdown"`  
 Start openocd `openocd -f info/openocd_configs/ftdi_lynx.cfg`
 Change EH address https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-Two-Expansion-Hubs#checking-the-address-of-an-expansion-hub
+
+## Interesting files from RC app
+Extracted-RC/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/stellaris/ - bootloader interaction code
+Extracted-RC/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/hardware/ - which pins things are connected to on the android header. Also has the model number of what the android board was based off of.
+Extracted-RC/FtcCommon/src/main/java/org/firstinspires/ftc/ftccommon/internal/manualcontrol/ - RHSP manual control?
+Extracted-RC/Hardware/src/main/java/com/qualcomm/hardware/lynx/ - rc rhsp implementation
 
 ## FTDI
 Remove the 74HC595 to turn off the obnoxious leds
@@ -26,13 +32,19 @@ Motor controller VNH5050AE full bridge motor controller
 USB to UART FT230XQ
 RS485 transceiver ST3485EB
 Bus transceiver SN74LVC8T245
-ESD Protection E5U Chip CPDV5-5V0U
-ESD Protection E3V3 Chip CPDV5-3V3UP
 Op Amp for shunts K176 SOT 23-5 ST LMV321RILT
 5V Buck converter driver tps54527
-Big zener diode for motor drives 1SMB5931BT3G
 3.3V Buck converter driver TPS562209
 701 IMU Bosch BNO055
+AAXXX U17 Adjustable shunt voltage regulator  TL431ASA
+High side current monitor U25 ZXCT1010E5TA
+USB OTG ESD Diodes U19 PUSBM5V5X4-TL
+
+#### Diodes
+Big zener diode for motor drives D4 1SMB5931BT3G
+Tiny ESD diode D5 PESD15VS1UL
+ESD Protection E5U Chip CPDV5-5V0U
+ESD Protection E3V3 Chip CPDV5-3V3UP
 
 #### Transistors
 Reverse current protection BIG mosfet FDD9409-F085
@@ -41,6 +53,7 @@ N channel MOSFET WJ3 BSH103
 P channel mosfet KFH 5V servo power enabe SSM3J328R
 P channel mosfet phone charging X73L AO3407A
 N channel MOSFET K38 BSS138W
+N channel MOSFET N32 GN (Last few characters may be different) Q13 and others AO3434A
 
 #### Connectors
 XT30 Male Amass [XT30UPB-M](https://www.tme.com/ux/en-us/details/xt30upb-m/dc-power-connectors/amass/)
@@ -63,11 +76,9 @@ b1 Fuse - 1A hold current - 0ZCJ0100FF2E
 bM Fuse - 0.5A hold current - 0ZCK0050FF2E
 
 #### Mystery Components
-Ask:
-Transistor Package Code N32 GN SOT 23 - for GPIO Drive - Seems to be a N channel MOSFET or a NPN transistor (unlikely)
-SOT 23 AA8IE or AAB1E some kind of voltage regulator
-D5 Diode. Seems to have a very high forward voltage, be blown, or not be a diode
-U25 amplifier for main current shunt
+D2
+D3 Maybe ESD Protection Diode LittelFuse SMF17A
+
 
 Don't ask - doesn't matter:
 USB something or other U19 - 6 pins
@@ -77,7 +88,6 @@ LED 3825 package. About 1.6 mm tall. 6 pins
 XT30
 3 pin JST
 Motor controllers?
-Mouser order
 
 ### Datasheet questions
 - External Ram? 
@@ -109,14 +119,14 @@ on page 599
  - Check if ENA/B to the motor drivers is an open drain pin on the MCU
 
 ### Todo
-Parse RHSP Frame
-Respond to basic commands from hubDriver
-Make handler for the different types of packet
+Implement the discovery command
 Implement the commandSet handlers ("DEKA")
 Implement all the DEKA commands
+Use uDMA to speed up serial transfers?
+Implement the address set command
+Check if the RC will send another packet before waiting for the response of the previous one
 
-Email rev about mystery components
-Enable 5V - automatic
+Update the schematic with the new part numbers from rev
 Check that this document matches the schematic
 Print out reset cause (page 254) on reset
 Print out hard fault cause
@@ -124,10 +134,15 @@ WFI instruction to wait for an interrupt instead of a tiny loop
 Setup flashing via UART. See https://github.com/REVrobotics/node-expansion-hub-ftdi/blob/main/src/EnterFirmwareUpdateMode.cc
 Use uDMA to speed up serial transfers?
 
+Make the button switch wifi bands - no idea how to do that
+
 ### Done
 RHSP
     Enable UART0
     Test TX/RX on UART0
+    Parse RHSP Frame
+    Respond to basic commands from hubDriver
+    Make handler for the different types of packet
 
 Enable faults
     See page 114 for what faults exist.
@@ -142,6 +157,8 @@ Before reading eeprom check EESUPP for errors
 Get rid of driverlib and headers
     All the TI code that should be left is linker config and startup code
 
+Enable 5V - automatic
+
 External oscillator 
     Enable
     set up with PLL to 80 MHz
@@ -152,7 +169,6 @@ External oscillator
 Change GPIOs to AHB (page 260)
 Find out what is in User Registers 1-4 - nothing
 Enable main oscillator verification - doesn't work - see errata
-
 
 ### Won't do
 Make the button put the device into rom bootloader mode. Check bootcfg register on page 594 - the button isn't physically hooked up to the pin that the BOOTCFG register is configured to use. BOOTCFG should stay not be modified by DuckLynx, so it is impossible
@@ -201,7 +217,6 @@ Pin 1 has a dot next to it on the PCB
 
 #### Android Header (J??)
 The header that connects to a Android device (if equipped)
-
 Pin numbering:
 ```
  1 - - 40
@@ -308,6 +323,12 @@ About a 3.21 nS pulse length (About 312 KHz)
 0x100 is the value that it counts down from
 0x20 is transition for on
 0x0 prescaler
+
+Colors:
+#ff2000 - no power orange
+#000020 - just powered on blue
+#00007f - flashing blue for rhsp timeout
+#002000 - rhsp connected green
 
 #### Button
 PB4 Button by RS458  

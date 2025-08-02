@@ -5,128 +5,6 @@
 	(uuid "361bc1b9-7219-4167-bb60-86ab8d98a828")
 	(paper "A4")
 	(lib_symbols
-		(symbol "Connector:Conn_01x01_Pin"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(property "Reference" "J"
-				(at 0 2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Value" "Conn_01x01_Pin"
-				(at 0 -2.54 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "Footprint" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Description" "Generic connector, single row, 01x01, script generated"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_locked" ""
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-				)
-			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_fp_filters" "Connector*:*_1x??_*"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(symbol "Conn_01x01_Pin_1_1"
-				(rectangle
-					(start 0.8636 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type outline)
-					)
-				)
-				(polyline
-					(pts
-						(xy 1.27 0) (xy 0.8636 0)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(pin passive line
-					(at 5.08 0 180)
-					(length 3.81)
-					(name "Pin_1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "1"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Device:C"
 			(pin_numbers
 				(hide yes)
@@ -390,6 +268,175 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Reference_Voltage:TL431DBZ"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "U"
+				(at -2.54 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "TL431DBZ"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+				(at 0 -4.826 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl431.pdf"
+				(at 1.778 -9.144 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+						(italic yes)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Shunt Regulator, SOT-23"
+				(at 0 -7.112 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "diode device shunt regulator"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SOT?23*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "TL431DBZ_0_1"
+				(polyline
+					(pts
+						(xy -1.27 0) (xy 0 0) (xy 1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy -0.762 -0.762) (xy -0.762 0.762) (xy 0.762 0) (xy -0.762 -0.762)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type outline)
+					)
+				)
+				(polyline
+					(pts
+						(xy 0.254 -0.762) (xy 0.762 -0.762) (xy 0.762 0.762) (xy 0.762 0.762)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "TL431DBZ_1_1"
+				(pin passive line
+					(at -2.54 0 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 0 2.54 270)
+					(length 2.54)
+					(name "REF"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 2.54 0 180)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "power:GND"
 			(power)
 			(pin_numbers
@@ -617,16 +664,6 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "This is U17. Couldn't find what it is and\ncouldn't find a good way to indicate a\ngeneric three pin chip\n"
-		(exclude_from_sim no)
-		(at 175.514 78.232 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-		)
-		(uuid "8564ee37-fda5-4bf7-8c33-2132080198a2")
-	)
 	(junction
 		(at 137.16 106.68)
 		(diameter 0)
@@ -713,13 +750,13 @@
 	)
 	(wire
 		(pts
-			(xy 156.21 92.71) (xy 156.21 95.25)
+			(xy 146.05 74.93) (xy 146.05 95.25)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "24beeec6-297d-499f-b666-c467deea43d0")
+		(uuid "25ac0369-a71b-4917-9fbf-89c80774c94d")
 	)
 	(wire
 		(pts
@@ -733,6 +770,26 @@
 	)
 	(wire
 		(pts
+			(xy 156.21 80.01) (xy 156.21 95.25)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "2e3f647e-5794-4cac-8aa7-ea0b4745dd6b")
+	)
+	(wire
+		(pts
+			(xy 161.29 77.47) (xy 161.29 74.93)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "34101a3f-bb00-4493-a1e4-962e7f9f3683")
+	)
+	(wire
+		(pts
 			(xy 156.21 100.33) (xy 156.21 106.68)
 		)
 		(stroke
@@ -740,6 +797,16 @@
 			(type default)
 		)
 		(uuid "4db64d97-12d5-493c-b8b5-d31c9bb1440e")
+	)
+	(wire
+		(pts
+			(xy 161.29 82.55) (xy 161.29 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "553fc5f6-b4df-498a-94f9-c1b3ff4cf730")
 	)
 	(wire
 		(pts
@@ -763,13 +830,13 @@
 	)
 	(wire
 		(pts
-			(xy 153.67 88.9) (xy 153.67 92.71)
+			(xy 156.21 80.01) (xy 158.75 80.01)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "672a71fa-4888-40f6-88e0-ec27a31a3c21")
+		(uuid "620be777-3b03-4bb5-9669-85f8c8b26a5e")
 	)
 	(wire
 		(pts
@@ -783,16 +850,6 @@
 	)
 	(wire
 		(pts
-			(xy 146.05 92.71) (xy 146.05 95.25)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ae12687-4316-4f5b-ba61-3a46ffe85a55")
-	)
-	(wire
-		(pts
 			(xy 146.05 100.33) (xy 146.05 106.68)
 		)
 		(stroke
@@ -800,26 +857,6 @@
 			(type default)
 		)
 		(uuid "7b4b7616-1256-42b8-820e-df77101f2ab1")
-	)
-	(wire
-		(pts
-			(xy 148.59 92.71) (xy 146.05 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7d992562-9b5a-4779-8810-5a3726bd3539")
-	)
-	(wire
-		(pts
-			(xy 153.67 92.71) (xy 156.21 92.71)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7ef704d9-1fc7-4ec5-99b1-9f0f6992b1f5")
 	)
 	(wire
 		(pts
@@ -843,13 +880,13 @@
 	)
 	(wire
 		(pts
-			(xy 148.59 88.9) (xy 148.59 92.71)
+			(xy 161.29 74.93) (xy 146.05 74.93)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "99ff60be-6a59-44f6-b80c-314204c01dce")
+		(uuid "8a7c49f3-5f02-4328-8932-5b9bebf66de9")
 	)
 	(wire
 		(pts
@@ -1097,72 +1134,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Pin")
-		(at 151.13 83.82 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "732a3bf0-ba01-49ba-89d0-64e4e8cb6616")
-		(property "Reference" "J?"
-			(at 152.654 80.518 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "Conn_01x01_Pin"
-			(at 146.558 71.374 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 151.13 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 151.13 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 151.13 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "a7d41263-d2c0-4f1f-9354-89e6f1631ac8")
-		)
-		(instances
-			(project "pcb"
-				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
-					(reference "J?")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:GND")
 		(at 137.16 110.49 0)
 		(unit 1)
@@ -1223,72 +1194,6 @@
 			(project "pcb"
 				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
 					(reference "#PWR05")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 151.13 78.74 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "7fb2af71-6113-4a3b-a262-63a8294c37fe")
-		(property "Reference" "#PWR023"
-			(at 151.13 72.39 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 151.13 73.66 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 151.13 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 151.13 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 151.13 78.74 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "0eda7167-1a8b-4934-8449-5d544fa54169")
-		)
-		(instances
-			(project "pcb"
-				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
-					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -1423,72 +1328,6 @@
 			(project "pcb"
 				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
 					(reference "R80")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Connector:Conn_01x01_Pin")
-		(at 153.67 83.82 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "9c627fcc-194d-4854-a9d8-77a5c0f5807a")
-		(property "Reference" "J?"
-			(at 153.924 83.566 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Value" "Conn_01x01_Pin"
-			(at 162.052 87.376 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Footprint" ""
-			(at 153.67 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 153.67 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 153.67 83.82 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f110056c-70f6-4281-9dcd-948a0c113ffd")
-		)
-		(instances
-			(project "pcb"
-				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
-					(reference "J?")
 					(unit 1)
 				)
 			)
@@ -1830,37 +1669,34 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:Conn_01x01_Pin")
-		(at 148.59 83.82 270)
+		(lib_id "power:GND")
+		(at 161.29 85.09 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "df3580a9-e66d-456d-b3c8-0355946ff0a7")
-		(property "Reference" "J?"
-			(at 149.86 83.1849 90)
+		(uuid "d1c05762-c6e0-482e-a2bb-7af1e3764d03")
+		(property "Reference" "#PWR027"
+			(at 161.29 91.44 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 				(hide yes)
 			)
 		)
-		(property "Value" "Conn_01x01_Pin"
-			(at 149.86 85.7249 90)
+		(property "Value" "GND"
+			(at 161.29 90.17 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
-				(hide yes)
 			)
 		)
 		(property "Footprint" ""
-			(at 148.59 83.82 0)
+			(at 161.29 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1868,8 +1704,8 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "~"
-			(at 148.59 83.82 0)
+		(property "Datasheet" ""
+			(at 161.29 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1877,8 +1713,8 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Generic connector, single row, 01x01, script generated"
-			(at 148.59 83.82 0)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 161.29 85.09 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -1887,12 +1723,87 @@
 			)
 		)
 		(pin "1"
-			(uuid "7c96614c-c54c-4e17-a826-a9b48b30fb18")
+			(uuid "11d069c9-29ac-47f0-b4cc-120ad6397c47")
 		)
 		(instances
 			(project "pcb"
 				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
-					(reference "J?")
+					(reference "#PWR027")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Reference_Voltage:TL431DBZ")
+		(at 161.29 80.01 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "d735d5aa-2db2-43dd-8f6a-e7e5d57fd0d7")
+		(property "Reference" "U17"
+			(at 163.83 78.7399 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "TL431ASA"
+			(at 163.83 81.2799 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-23"
+			(at 166.116 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "http://www.ti.com/lit/ds/symlink/tl431.pdf"
+			(at 170.434 78.232 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+					(italic yes)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Shunt Regulator, SOT-23"
+			(at 168.402 80.01 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "87e174c3-c931-4edc-89d1-152b509b5cbd")
+		)
+		(pin "2"
+			(uuid "c0a680fd-a64a-4a61-aa0c-625928f421d1")
+		)
+		(pin "3"
+			(uuid "71bd7dc0-4bd0-4d56-b9b2-82d54eafd1c2")
+		)
+		(instances
+			(project ""
+				(path "/a3d12dc7-033a-4c99-b909-7e1454b0334e/90aa235e-b43e-4667-8ffa-fd21dbf822c0"
+					(reference "U17")
 					(unit 1)
 				)
 			)
