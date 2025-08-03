@@ -1,5 +1,7 @@
 #include <stdint.h>
 #include "register.h"
+#include "debugUART.h"
+#include "rhspUART.h"
 
 //Forward declare the functions that are used in the vector table.
 void resetInterruptHandler(void);
@@ -36,7 +38,7 @@ void (* const vectorTable[])(void) = {
     defaultInterruptHandler,                      // GPIO Port C
     defaultInterruptHandler,                      // GPIO Port D
     defaultInterruptHandler,                      // GPIO Port E
-    defaultInterruptHandler,                      // UART0 Rx and Tx
+    rhspUART_interruptHandler,                      // UART0 Rx and Tx
     defaultInterruptHandler,                      // UART1 Rx and Tx
     defaultInterruptHandler,                      // SSI0 Rx and Tx
     defaultInterruptHandler,                      // I2C0 Master and Slave
@@ -233,7 +235,7 @@ void resetInterruptHandler(void) {
     // Change the clock over to the external one and set the PLL to output 80 MHz
     // 
 
-    // REV firmware runs the same as we have set up here except PWV div is on and at 101
+    // REV firmware runs the same as we have set up here except PWM div is on and at 101
     // > mrw 0x400fe060
     // 0x15a1540
     // > mrw 0x400fe070
@@ -339,4 +341,9 @@ void defaultInterruptHandler(void) {
     //Infinite loop so we can see where this interrupt came from with the debugger
     while(1) {
     }
+}
+
+//All the other interrupts that don't have their own handlers
+void uart0InterruptHandler(void) {
+    debugUART_printString("UART 0 interrupt!\n");
 }

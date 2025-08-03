@@ -30,6 +30,7 @@ set(SRC_FILES
         src/rhsp.c
         src/uart.c
         src/dma.c
+        src/rhspUART.c
 
         # src/driverlib/adc.c
         # # src/driverlib/aes.c

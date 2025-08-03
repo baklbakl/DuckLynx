@@ -51,6 +51,8 @@ void uart_send(const uint32_t baseAddress, const uint8_t c) {
     //Wait for the FIFO to have space
     while(*(UARTFR) & REGISTER_UART_UARTFR_TXFF) {}
 
+    //Warning! If this is being executed and is interrupted here and the interrupt handler calls this function as well the fifo may loose a character
+
     // Print out a character
     *(volatile uint32_t * const)(baseAddress + REGISTER_UART_UARTDR_OFFSET) = c;
 }

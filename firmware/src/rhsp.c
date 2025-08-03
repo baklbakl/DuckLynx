@@ -1,11 +1,11 @@
 #include "rhsp.h"
 
 #include <stdint.h>
+
 #include "register.h"
 #include "debugUART.h"
-#include "sysctl.h"
+#include "rhspUART.h"
 #include "uart.h"
-#include "gpio.h"
 #include "led.h"
 
 //Ideally this file should be platform agnostic so it can be tested without a lynx board
@@ -104,6 +104,8 @@ const uint16_t RHSP_PACKET_MIN_SIZE = RHSP_HEADER_SIZE + RHSP_CHECKSUM_SIZE;
 const uint16_t RHSP_MAGIC_NUMBER = 0x4B44;
 const uint8_t RHSP_MAGIC_NUMBER_BYTE_ONE = RHSP_MAGIC_NUMBER & 0xFF;
 const uint8_t RHSP_MAGIC_NUMBER_BYTE_TWO = RHSP_MAGIC_NUMBER >> 8;
+const uint8_t RHSP_BROADCAST_ADDRESS = 0xFF;
+const uint8_t RHSP_CONTROLLER_ADDRESS = 0x00;
 
 union {
     uint8_t buffer[RHSP_PAYLOAD_MAX_SIZE + RHSP_HEADER_SIZE + RHSP_CHECKSUM_SIZE];
@@ -143,24 +145,7 @@ uint8_t getPacketChecksum(void) {
     return packet.buffer[packet.decoded.packetSize-1];
 }
 
-const uint32_t REGISTER_SYSCTL_PERIPHCTL_UART_0_INSTANCEMASK = 0b1 << 0;
-const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_A_INSTANCEMASK = 0b1 << 0;
-
-const uint32_t REGISTER_GPIO_A_BASE = REGISTER_GPIO_BASE + 0x54000;
-
-const uint8_t rhspUARTPins = REGISTER_GPIO_PIN_0 | REGISTER_GPIO_PIN_1;
-
 int8_t rhsp_init() {
-    //Setup rhsp UART
-    sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_UART_OFFSET, REGISTER_SYSCTL_PERIPHCTL_UART_0_INSTANCEMASK);
-    sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET, REGISTER_SYSCTL_PERIPHCTL_GPIO_A_INSTANCEMASK);
-    
-    gpio_enableAltPinFunc(REGISTER_GPIO_A_BASE, rhspUARTPins, REGISTER_GPIO_GPIOPCTL_UART);
-
-    //For 460800 baud and a system clock of 80 MHz the integer divisor is 10 and the fractional component is 54. 
-    // To compute see datasheet page 926.
-    uart_configure(REGISTER_UART_0_BASE, 10, 54);
-
     //Maybe not needed, but better to be safe than sorry
     clearBuffer();
     return 0;
@@ -210,9 +195,11 @@ void sendPacket(void) {
     debugUART_printString("Sending response: ");
     printBuffer();
     
-    for(int i = 0; i < packet.decoded.packetSize; i++) {
-        uart_send(REGISTER_UART_0_BASE, packet.buffer[i]);
-    }
+    rhspUART_send(packet.buffer, packet.decoded.packetSize);
+
+    // for(int i = 0; i < packet.decoded.packetSize; i++) {
+    //     uart_send(REGISTER_UART_0_BASE, packet.buffer[i]);
+    // }
 }
 
 void sendReadPacket(void) {
@@ -264,7 +251,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         return RHSP_PARSE_RESULT_INVALID_CHECKSUM;
     }
 
-    if(packet.decoded.destAddress != rhspAddress) {
+    if(packet.decoded.destAddress != rhspAddress && packet.decoded.destAddress != RHSP_BROADCAST_ADDRESS) {
         //ADD: Pass along packets not bound for this hub
         return RHSP_PARSE_RESULT_INCORRECT_DEST;
     }
@@ -313,7 +300,6 @@ RHSP_PARSE_RESULT handlePacket(void) {
     case RHSP_COMMAND_QUERY_INTERFACE:
         break;
     
-    //ADD: Implement discovery command
     case RHSP_COMMAND_DISCOVERY:
         if(packet.decoded.packetSize != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
@@ -326,16 +312,18 @@ RHSP_PARSE_RESULT handlePacket(void) {
         //ADD: Make the discovery command look for RS485 Children
 
         sendReadPacket();
+        break;
 
     case RHSP_COMMAND_SET_NEW_MODULE_ADDRESS:
         uint8_t newAddress = 0;
-        if(packet.decoded.packetSize != 1 && ((newAddress = packet.decoded.payload[0]) == 255 || newAddress == 0)) {
+        if(packet.decoded.packetSize != 1 && ((newAddress = packet.decoded.payload[0]) == RHSP_BROADCAST_ADDRESS || newAddress == RHSP_CONTROLLER_ADDRESS)) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
             return RHSP_PARSE_RESULT_INVALID_PAYLOAD;
         }
 
         //ADD: Write new address to EEPROM
         rhspAddress = newAddress;
+        break;
 
 
     //These will never be implemented
@@ -367,6 +355,7 @@ uint16_t currPacketLoc = 0;
 int8_t rhsp_tick(void) {
     uint8_t byte = 0;
     //Check to make sure there is any data in the FIFO of the serial port
+    //FIX: Make sure to return early here if packet buffer is busy with a DMA transmission 
     if(uart_read(REGISTER_UART_0_BASE, &byte) < 0) {
         return 0;
     }

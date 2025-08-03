@@ -86,5 +86,15 @@ static const uint32_t REGISTER_UART_UARTDR_OFFSET = 0;
 //
 extern uint8_t rhspAddress;
 
+//
+// DMA
+//
+static const uint32_t REGISTER_DMA_BASE = 0x400FF000;
+
+static const uint32_t REGISTER_DMA_CHANNEL_8 = 0b1 << 8;
+static const uint32_t REGISTER_DMA_CHANNEL_9 = 0b1 << 9;
+
+static volatile uint32_t * const REGISTER_DMA_DMACHIS = (uint32_t *)(REGISTER_DMA_BASE + 0x504);
+
 #endif
 
