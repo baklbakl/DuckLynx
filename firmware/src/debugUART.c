@@ -1,9 +1,9 @@
 #include "debugUART.h"
 
-#include "gpio.h"
-#include "register.h"
-#include "sysctl.h"
-#include "uart.h"
+#include "hardware/gpio.h"
+#include "hardware/register.h"
+#include "hardware/sysctl.h"
+#include "hardware/uart.h"
 
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_UART_4_INSTANCEMASK = 0b1 << 4;
 const uint32_t REGISTER_UART_4_BASE = REGISTER_UART_BASE + 0x4000;

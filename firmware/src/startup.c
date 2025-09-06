@@ -1,7 +1,7 @@
 #include <stdint.h>
-#include "register.h"
+#include "hardware/register.h"
 #include "debugUART.h"
-#include "rhspUART.h"
+#include "rhsp/rhspUART.h"
 
 //Forward declare the functions that are used in the vector table.
 void resetInterruptHandler(void);
@@ -11,7 +11,7 @@ void defaultInterruptHandler(void);
 extern int main(void);
 
 //Space in ram for the stack. If weird behavior make this bigger
-static uint32_t stack[256];
+static uint32_t stack[512];
 
 //The vector table. Contains the stack pointer at the start of it and all the interrupt / fault handlers after
 //NOLINTBEGIN(modernize-use-nullptr, performance-no-int-to-ptr)
@@ -183,7 +183,6 @@ extern uint32_t bss;
 extern uint32_t bssEnd;
 
 //All the registers and constants for setting up the clock
-volatile uint32_t * const REGISTER_SYSCTL_RCC = (uint32_t *)(REGISTER_SYSCTL_BASE + 0x60);
 const uint32_t REGISTER_SYSCTL_RCC_USESYSDIV = 0b1 << 22;
 const uint32_t REGISTER_SYSCTL_RCC_BYPASS = 0b1 << 11;
 
@@ -316,7 +315,8 @@ void resetInterruptHandler(void) {
     //Enable coprocessors 10 and 11 which correspond to the FPU. The bits are set to all ones which allows all code to use the FPU. See page 197 of the datasheet.
     //The FPU is enabled despite the fact that we don't use it because gcc may try to save the FPU registers on the stack when it calls a function and generate a fault.
     //No DMB instructions are needed because the FPU registers are in strongly ordered memory. See page 96-98 of the datasheet.
-    *REGISTER_CORTEX_PERIPHERAL_CPAC |= REGISTER_CORTEX_PERIPHERAL_CPAC_CP10_CP11;
+    // TEST: Does disabling the FPU Cause any issues -- nope. Only enable it when we need to use it, but check how long it takes to do so
+    // *REGISTER_CORTEX_PERIPHERAL_CPAC |= REGISTER_CORTEX_PERIPHERAL_CPAC_CP10_CP11;
     
     //
     // Call the main function
@@ -341,9 +341,4 @@ void defaultInterruptHandler(void) {
     //Infinite loop so we can see where this interrupt came from with the debugger
     while(1) {
     }
-}
-
-//All the other interrupts that don't have their own handlers
-void uart0InterruptHandler(void) {
-    debugUART_printString("UART 0 interrupt!\n");
 }

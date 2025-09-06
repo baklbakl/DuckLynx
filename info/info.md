@@ -1,10 +1,14 @@
 # DuckLynx
+Change EH address https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-Two-Expansion-Hubs#checking-the-address-of-an-expansion-hub
+How to ghidra!!! With registers https://www.youtube.com/watch?app=desktop&v=q4CxE5P6RUE
+
+<!-- FIX: Update the programming instructions to make them not specific to my machine -->
 ## Programming
 Connect to debug serial `picocom -b 115200 --imap lfcrlf --echo /dev/ttyUSB1`  
-Program chip `openocd -f info/openocd_configs/ftdi_lynx.cfg -c "program /home/polarbub/Documents/saves/hardware/lynx/firmware/build/expansionHubFW.bin reset; shutdown"`  
-Read flash `openocd -f info/openocd_configs/ftdi_lynx.cfg -c "flash read_bank 0 /home/polarbub/Documents/saves/code/c/expansionHubFW/info/readLynxFW.bin; shutdown"`  
-Start openocd `openocd -f info/openocd_configs/ftdi_lynx.cfg`
-Change EH address https://github.com/FIRST-Tech-Challenge/FtcRobotController/wiki/Using-Two-Expansion-Hubs#checking-the-address-of-an-expansion-hub
+Program chip `openocd -f openocd\ configs/ftdi_lynx.cfg -c "program /home/polarbub/Documents/saves/hardware/lynx/firmware/build/expansionHubFW.bin reset; shutdown"`  
+Read flash `openocd -f openocd\ configs/ftdi_lynx.cfg -c "flash read_bank 0 /home/polarbub/Documents/saves/code/c/expansionHubFW/info/readLynxFW.bin; shutdown"`  
+Start openocd `openocd -f openocd\ configs/ftdi_lynx.cfg`
+To restore the MCU to factory connect the SRST line and run `openocd -f openocd\ configs/ftdi_lynx.cfg -c "reset_config srst_only; stellaris recover"`
 
 ## Interesting files from RC app
 Extracted-RC/RobotCore/src/main/java/org/firstinspires/ftc/robotcore/internal/stellaris/ - bootloader interaction code
@@ -21,6 +25,9 @@ Link: https://www.ti.com/tool/EK-TM4C123GXL#tech-d5 4 ocs
 MCU: https://www.ti.com/product/TM4C123GH6PM
 Program chip openocd -f board/ti_ek-tm4c123gxl.cfg -c "program /home/polarbub/Documents/saves/code/c/expansionHubFW/build/expansionHubFW.bin verify reset"
 
+## Android Board
+This makes an Expansion Hub into a Control Hub. Seems to be based off of the Dragonboard 410c
+
 ## Lynx HIB (Hardware Interface Board)
 ### Components
 A large chunk of the resistors are 0603
@@ -36,7 +43,7 @@ Op Amp for shunts K176 SOT 23-5 ST LMV321RILT
 5V Buck converter driver tps54527
 3.3V Buck converter driver TPS562209
 701 IMU Bosch BNO055
-AAXXX U17 Adjustable shunt voltage regulator  TL431ASA
+AAXXX U17 Adjustable shunt voltage regulator TL431ASA
 High side current monitor U25 ZXCT1010E5TA
 USB OTG ESD Diodes U19 PUSBM5V5X4-TL
 
@@ -79,9 +86,7 @@ bM Fuse - 0.5A hold current - 0ZCK0050FF2E
 D2
 D3 Maybe ESD Protection Diode LittelFuse SMF17A
 
-
 Don't ask - doesn't matter:
-USB something or other U19 - 6 pins
 LED 3825 package. About 1.6 mm tall. 6 pins
 
 #### To order
@@ -101,40 +106,50 @@ Motor controllers?
 on page 599
 
 ### Hardware questions
- - Why is the VREF+ 3 volts not 3.3V?
- - Does the 32678 Hz crystal go to the MCU or just the IMU?
- - Where do 12V and 3V3 get measured?
- - How does phone charging work? Does it work?
+ - Does 3V3 get measured?
  - What does PJ7 do? It goes between CBUS2, the MCU and maybe somewhere else.
- - Figure out how to setup the FTDI reset on MCU reset thing - where did I get the idea that this happens? Does it happen? Does the FTDI get reset at other times?
  - Find where CBUS3 on the FTDI goes - likely nowhere as it is just a test pad
- - Find out how/if phone charging works
  - J16 Android Module uart - what does this do?
- - Check if the outputs of the unused level shifter channels are actually no connect
- - Find out what PB0 does
- - Finish all of the crystal connections for the MCU
- - Is there anything that prevents the Android Module and the FTDI from trying to talk at the same time?
- - Check if PB0 triggers an interrupt
- - Check if PM2 is a pullup because the buck driver may try and pull it down if there is a fault generating a conflict
+ - Find out what PB0 does - related informing the MCU when the IMU is ready. Also seems to go to the android header. Why?
+ - Check if PM2 is a pullup on the MCU or driven high because the buck driver may try and pull it down if there is a fault generating a conflict
  - Check if ENA/B to the motor drivers is an open drain pin on the MCU
+ - Figure out how to setup the FTDI reset on MCU reset thing - where did I get the idea that this happens? Does it happen? Does the FTDI get reset at other times? - It seems that the MCU can reset the FTDI, but I doubt that it ever happens. More likely it is used to tell when there is an android module plugged in. Check PC6
+ - The circuit around PJ6 and the android header seems weird. It seems to only pull down PJ6 when both the android header control enable line is pulled low and a pin on the android header is too. Also what does it indicate?
 
+#### Answered Questions
+ - Why is the VREF+ 3 volts not 3.3V? - It is under vcc because the stable regulator regulates from VCC
+ - Does the 32678 Hz crystal go to the MCU or just the IMU? - Just IMU
+ - Where does 12V get measured - See schematic
+ - How does phone charging work? Does it work? - According to rev it doesn't with the phones that are around today, so we won't be trying to use it at all
+ - Is there anything that prevents the Android Module and the FTDI from trying to talk at the same time? - Yes. When the enable line for the level shifters goes low it also places the FTDI in reset
+ 
 ### Todo
-Implement the discovery command
-Implement the commandSet handlers ("DEKA")
-Implement all the DEKA commands
-Use uDMA to speed up serial transfers?
-Implement the address set command
-Check if the RC will send another packet before waiting for the response of the previous one
+End goal: really fast PID and feedforward loop times from java
+Ideas:
+    - Up the RHSP baud rate
+    - Remove message / reference number
+    - Motion read/write packet that sends new motor powers and retrieves encoder positions, battery current, battery voltage, and anything else important.
 
-Update the schematic with the new part numbers from rev
-Check that this document matches the schematic
+Implement motor DEKA commands
+    mode
+    encoder
+    encoder reset
+Add voltage too low to run motors failsafe
+  Does the stock firmware stop trying to run the motors if the 12 is removed while they are running?
+Add RHSP timeout
+Setup the automatic LED
+
+Add motor controller fault monitoring
+Coulomb counting for battery state of charge
+Enable 5V
+Check that all of the hardware initialization explicitly disables the hardware before making changes
+Add servo RHSP commands
+Update this document to match the schematic
 Print out reset cause (page 254) on reset
 Print out hard fault cause
 WFI instruction to wait for an interrupt instead of a tiny loop 
 Setup flashing via UART. See https://github.com/REVrobotics/node-expansion-hub-ftdi/blob/main/src/EnterFirmwareUpdateMode.cc
-Use uDMA to speed up serial transfers?
-
-Make the button switch wifi bands - no idea how to do that
+Make the button switch wifi bands - no idea how to do that - probably not nessisary as the android header has the button broken out to it
 
 ### Done
 RHSP
@@ -143,6 +158,12 @@ RHSP
     Parse RHSP Frame
     Respond to basic commands from hubDriver
     Make handler for the different types of packet
+    Implement the discovery command
+    Implement the commandSet handlers ("DEKA")
+    Use uDMA to speed up serial transfers
+    Implement the address set command
+    Implement important parts of ADC DEKA command
+    Implement version DEKA commands
 
 Enable faults
     See page 114 for what faults exist.
@@ -157,8 +178,6 @@ Before reading eeprom check EESUPP for errors
 Get rid of driverlib and headers
     All the TI code that should be left is linker config and startup code
 
-Enable 5V - automatic
-
 External oscillator 
     Enable
     set up with PLL to 80 MHz
@@ -169,6 +188,8 @@ External oscillator
 Change GPIOs to AHB (page 260)
 Find out what is in User Registers 1-4 - nothing
 Enable main oscillator verification - doesn't work - see errata
+Update the schematic with the new part numbers from rev
+Check if the RC will send another packet before waiting for the response of the previous one - it will
 
 ### Won't do
 Make the button put the device into rom bootloader mode. Check bootcfg register on page 594 - the button isn't physically hooked up to the pin that the BOOTCFG register is configured to use. BOOTCFG should stay not be modified by DuckLynx, so it is impossible
@@ -285,8 +306,6 @@ https://github.com/WestsideRobotics/FTC-Power-Monitoring/wiki
 https://github.com/OpenFTC/RevExtensions2/tree/master/rev-extensions-2/src/main/java/org/openftc/revextensions2
 https://github.com/OpenFTC/Extracted-RC/blob/ce0a67af28c966c7a166ae51765e115a853734fc/Hardware/src/main/java/com/qualcomm/hardware/lynx/commands/core/LynxGetADCCommand.java#L66
 B
-16 - RTS - MCU PK5 and Android Header 36
-```
 
 ### MCU Pin Connections
 Overall temp sensor
@@ -296,6 +315,7 @@ Overall temp sensor
 PB1 (Bootconfig enter bootloader) FT230X Pin 11 (CBUS1) and TP3 (NPRG)
 RST FT230X Pin 12 (CBUS0) and TP2 (NRST)
 PJ7 FT230X Pin 5 (CBUS2)
+PK5 FT230X Pin 16 (RTS) and Android Header 36
 
 #### UART
 U0Tx (PA1) FT230X Rx  
@@ -325,10 +345,12 @@ About a 3.21 nS pulse length (About 312 KHz)
 0x0 prescaler
 
 Colors:
-#ff2000 - no power orange
+#ff2000 - no power flashing orange
 #000020 - just powered on blue
 #00007f - flashing blue for rhsp timeout
 #002000 - rhsp connected green
+For flashing modes leds blink every 600 ms (300 ms on 300 ms off). 
+Expansion hubs blink their address every so often, but control hubs don't. This seems to be determined by if the address is 173 or it is a low number
 
 #### Button
 PB4 Button by RS458  
@@ -391,8 +413,7 @@ PM1 R25 Left (input)
 #### Analog GPIO
 VCCA and GNDA are just connected to VCC and GND
 VREFA- is connected to GND
-VREFA+ is connected to a circuit that seems to make 3V instead of the normal 3.3V VCC. This seems weird because the opamps for current measurement go to 3.3V.
-All of the pins are connected through a Input - 2k - measurement - 3k - GND resistor divider to move 0-5V signals to 0-3V. This could be why the VREFA+ is 3V not 3.3V.
+VREFA+ is connected to a circuit that makes 2.994V. This is derived from the TL431A datasheet by using the formula Vout = Vref * (1 + (R1/R2)) which in the case of the HIB is 2.994 = 2.495 * (1 + (2000 / 10000))
 
 AGPIO 0 AIN0 (PE3)
 AGPIO 1 AIN1 (PE2)
@@ -402,7 +423,7 @@ AGPIO 3 AIN3 (PE0)
 #### 5V rail
 Buck converter enable Pin 1 PM2
 Current Sense opamp out AIN12 (PD3)
-Voltage monitoring AIN23 (PP0) - Through resistor divider with R108 / R109
+Voltage monitoring AIN23 (PP0) - Through resistor divider with two 10K resistors to divide voltage by 2. 
 
 #### Servo
 Servo 5 PWM M0PWM7 (PH7)
@@ -460,8 +481,8 @@ CH3
  - B PhB1 (PG1)
 
 #### Battery
-Voltage   
-Current
+Voltage - connected to AIN22 (PP1) via a 1/6 resistor divider with 10K and 2K resistors
+Current - Uses a high side current monitor IC with a 0.003 ohm shunt and 3K Rout resistor into AIN13 (PD2)
 
 #### External oscillator
 Called main oscillator by the datasheet

@@ -51,14 +51,17 @@ SECTIONS
         KEEP(*(.vectorTable))
         *(.text*)
         *(.rodata*)
-        _textEnd = .;
+        /* For stack traces at runtime */
+        *(.ARM.exidx*)
+        textEnd = .;
     } > FLASH
 
     .data : AT(ADDR(.text) + SIZEOF(.text))
     {
         data = .;
         dataLoadAddr = LOADADDR (.data);
-        *(vtable)
+        /* what is the vtable section? Apparently nothing, because stuff works after commenting it out. */
+        /* *(vtable) */
         *(.data*)
         dataEnd = .;
     } > SRAM
@@ -67,6 +70,7 @@ SECTIONS
     {
         bss = .;
         *(.bss*)
+        /* Get rid of common symbols because GCC doesn't use them by default? */
         *(COMMON)
         bssEnd = .;
     } > SRAM

@@ -1574,7 +1574,7 @@
 			)
 		)
 	)
-	(global_label "PN0"
+	(global_label "PN1"
 		(shape input)
 		(at 179.07 73.66 0)
 		(fields_autoplaced yes)
@@ -1640,7 +1640,7 @@
 			)
 		)
 	)
-	(global_label "PN1"
+	(global_label "PN0"
 		(shape input)
 		(at 179.07 91.44 0)
 		(fields_autoplaced yes)

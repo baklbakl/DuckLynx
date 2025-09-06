@@ -2794,7 +2794,7 @@
 				)
 			)
 		)
-		(property "Value" "R_Shunt"
+		(property "Value" "0.003"
 			(at 160.02 105.41 90)
 			(effects
 				(font

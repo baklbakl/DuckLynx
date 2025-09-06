@@ -21,49 +21,21 @@ set(SRC_FILES
         src/main.c
         src/startup.c
         src/debugUART.c
-        src/led.c
         src/logo.c
-        src/eeprom.c
-        src/sysctl.c
-        src/debug.c
-        src/gpio.c
-        src/rhsp.c
-        src/uart.c
-        src/dma.c
-        src/rhspUART.c
+        src/other.c
 
-        # src/driverlib/adc.c
-        # # src/driverlib/aes.c
-        # # src/driverlib/can.c
-        # src/driverlib/comp.c
-        # src/driverlib/cpu.c
-        # # src/driverlib/crc.c
-        # # src/driverlib/des.c
-        # src/driverlib/eeprom.c
-        # # src/driverlib/emac.c
-        # src/driverlib/epi.c
-        # src/driverlib/flash.c
-        # src/driverlib/fpu.c
-        # src/driverlib/gpio.c
-        # src/driverlib/hibernate.c
-        # src/driverlib/i2c.c
-        # src/driverlib/interrupt.c
-        # # src/driverlib/lcd.c
-        # src/driverlib/mpu.c
-        # src/driverlib/onewire.c
-        # src/driverlib/pwm.c
-        # src/driverlib/qei.c
-        # # src/driverlib/shamd5.c
-        # src/driverlib/ssi.c
-        # # src/driverlib/sw_crc.c
-        # src/driverlib/sysctl.c
-        # src/driverlib/sysexc.c
-        # src/driverlib/systick.c
-        # src/driverlib/timer.c
-        # src/driverlib/uart.c
-        # src/driverlib/udma.c
-        # src/driverlib/usb.c
-        # src/driverlib/watchdog.c
+        src/hardware/led.c
+        src/hardware/eeprom.c
+        src/hardware/gpio.c
+        src/hardware/uart.c
+        src/hardware/dma.c
+        src/hardware/adc.c 
+        src/hardware/motor.c
+        src/hardware/timer.c
+        src/hardware/sysctl.c
+        
+        src/rhsp/rhsp.c
+        src/rhsp/rhspUART.c        
 )
 
 # Define the build target for the executable
