@@ -511,6 +511,24 @@ SCL 3
 Upper external UART Rx
 Lower external UART Rx
 
+#### MCU replacment
+To check
+  All ESD diodes
+  Motor drives
+
+To fix
+  External clock shorted
+  Blue LED resistor
+  Red LED
+
+Won't fix
+  5V enable PC6
+  Android board sense PC7
+  Software encoder PF4
+  Software encoder PF5
+  RS485 Plug #2
+  UART 2
+
 ### Serial numbers
 Serial number is the serial number of the FTDI
 

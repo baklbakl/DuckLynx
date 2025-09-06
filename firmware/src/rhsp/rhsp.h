@@ -27,7 +27,7 @@ typedef enum : uint8_t {
 } RHSP_MODULE_STATUS;
 volatile extern RHSP_MODULE_STATUS rhsp_moduleStatus;
 
-static const uint32_t RHSP_TIMEOUT = TIMER_TICKS_PER_SECOND * 2;
+static const uint32_t RHSP_TIMEOUT = TIMER_TICKS_PER_100MS * 25;
 
 int8_t rhsp_init(void);
 void rhsp_tick(uint8_t * location, uint16_t count);

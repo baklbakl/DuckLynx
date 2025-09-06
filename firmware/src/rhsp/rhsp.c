@@ -300,7 +300,6 @@ void sendNACK(RHSP_NACK nackCode) {
 }
 
 //ADD: Checks for all the rest of the statuses and motor alerts
-//TEST: Does the low battery status reset itself after the voltage rises or does it wait for a status clear over rhsp
 volatile RHSP_MODULE_STATUS rhsp_moduleStatus = RHSP_MODULE_STATUS_DEVICE_RESET;
 uint8_t motorAlerts = 0;
 

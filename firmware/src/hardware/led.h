@@ -33,9 +33,9 @@ void led_getColor(uint8_t * red, uint8_t * green, uint8_t * blue);
 void led_on(void);
 void led_off(void);
 void led_dumpPattern(void);
+void led_setupPatternWithTimeForce(const LED_MODE mode, const led_Pattern *pattern, const uint32_t time);
 void led_setupPatternWithTime(const LED_MODE mode, const led_Pattern *pattern, const uint32_t time);
 void led_setupPattern(const LED_MODE mode, const led_Pattern *pattern);
-// void led_doNextPatternStep(void);
 
 enum : uint8_t {
     LED_MAX_PATTERN_STEPS = 16

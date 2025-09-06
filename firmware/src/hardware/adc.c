@@ -237,13 +237,15 @@ void adc_checkBatteryVoltage(uint32_t currentTime) {
     debugUART_printChar('\n');
 
     if(led_mode == LED_MODE_NO_BATTERY && outValue > ADC_LOW_BATTERY_CUTOFF_VOLTAGE) {
-        debugUART_printString("Battery restored\n");
-        //TEST: Does the stock firmware restore the step in the pattern after power is restored?
-        led_setupPatternWithTime(led_oldMode, led_oldPattern, currentTime);
+        //The stock firmware doesn't restore its LED state after power is restored, but we do because I think it's a handy feature
+        led_setupPatternWithTimeForce(led_oldMode, led_oldPattern, currentTime);
+        rhsp_moduleStatus &= (~RHSP_MODULE_STATUS_BATTERY_LOW);
+        //Stock firmware dosen't restart motors when power comes back, so we won't either
+        
 
     } else if(led_mode != LED_MODE_NO_BATTERY && outValue <= ADC_LOW_BATTERY_CUTOFF_VOLTAGE) {
         rhsp_moduleStatus |= RHSP_MODULE_STATUS_BATTERY_LOW;
-        //TEST: Does low power trigger a full failsafe or does it just diable motors on stock firmware?
+        //Low battery voltage triggers a full failsafe
         failsafe();
 
         led_oldMode = led_mode;

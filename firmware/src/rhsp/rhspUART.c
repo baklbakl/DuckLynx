@@ -189,7 +189,6 @@ void rhspUART_interruptHandler(void) {
     if((*REGISTER_DMA_DMACHIS) & REGISTER_DMA_CHANNEL_8) {
         *REGISTER_DMA_DMACHIS |= REGISTER_DMA_CHANNEL_8;
         // debugUART_printString("Interrupt from RX DMA finishing!\n");
-        //FIX: Come up with some way of caching the number of transferred bytes so that we don't have to do this
         rhsp_tick(lastReceiveLocation, lastReceiveSize);
     }
 }

@@ -203,9 +203,9 @@ void led_setColor(const uint8_t red, const uint8_t green, const uint8_t blue) {
 }
 
 void led_getColor(uint8_t * red, uint8_t * green, uint8_t * blue) {
-    *red = *REGISTER_GPTM_W0_GPTMTAMATCHR;
-    *green = *REGISTER_GPTM_W0_GPTMTBMATCHR;
-    *blue = *REGISTER_GPTM_W5_GPTMTBMATCHR;
+    *red = (uint8_t)(*REGISTER_GPTM_W0_GPTMTAMATCHR);
+    *green = (uint8_t)(*REGISTER_GPTM_W0_GPTMTBMATCHR);
+    *blue = (uint8_t)(*REGISTER_GPTM_W5_GPTMTBMATCHR);
 }
 
 void led_on(void){
@@ -237,34 +237,26 @@ void led_dumpPattern(void) {
     }
 }
 
+void led_setupPatternWithTimeForce(const LED_MODE mode, const led_Pattern *pattern, const uint32_t time) {
+    led_mode = mode;
+    led_currentPattern = pattern;
+    led_currentPatternStep = 0;
+    led_lastStepTime = time;
+    
+    led_PatternStep step = led_currentPattern->steps[led_currentPatternStep];
+    led_setColor(step.red, step.green, step.blue);
+}
+
 void led_setupPatternWithTime(const LED_MODE mode, const led_Pattern *pattern, const uint32_t time) {
     if(led_mode == LED_MODE_NO_BATTERY) {
         led_oldMode = mode;
         led_oldPattern = pattern;
 
     } else {
-        led_mode = mode;
-        led_currentPattern = pattern;
-        led_currentPatternStep = 0;
-        led_lastStepTime = time;
-        
-        led_PatternStep step = led_currentPattern->steps[led_currentPatternStep];
-        led_setColor(step.red, step.green, step.blue);
+        led_setupPatternWithTimeForce(mode, pattern, time);
     }
 }
 
 void led_setupPattern(const LED_MODE mode, const led_Pattern *pattern) {
     led_setupPatternWithTime(mode, pattern, *timer_value);
 }
-
-
-
-// void led_doNextPatternStep(void) {
-//     led_currentPatternStep++;
-//     if(led_currentPatternStep >= led_currentPattern->totalSteps) {
-//         led_currentPatternStep = 0;
-//     }
-    
-//     led_PatternStep step = led_currentPattern->steps[led_currentPatternStep];
-//     led_setColor(step.red, step.green, step.blue);
-// }

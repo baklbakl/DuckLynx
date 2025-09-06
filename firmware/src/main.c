@@ -94,8 +94,6 @@ int main(void) {
     debugUART_printWord(rhspAddress);
     debugUART_printString("\n\n");
 
-    // goto cleanup;
-
     while(1) {
         // debugUART_printString("Check: ");
         // debugUART_printU8Hex(rhsp_lastCommandTime - (*timer_value) > RHSP_TIMEOUT && rhsp_lastCommandTime != UINT32_MAX && !(rhsp_moduleStatus & RHSP_MODULE_STATUS_KEEP_ALIVE_TIMEOUT));

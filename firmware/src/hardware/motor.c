@@ -22,13 +22,13 @@ const uint32_t REGISTER_SYSCTL_PERIPHCTL_PWM_1_INSTANCEMASK = 0b1 << 1;
 const uint32_t REGISTER_GPIO_GPIOODR_OFFSET = 0x50C;
 const uint32_t REGISTER_GPIO_GPIOPCTL_H_PWM = 0x4;
 
-const uint8_t INA_PIN = REGISTER_GPIO_PIN_6;
-const uint8_t INB_PIN = REGISTER_GPIO_PIN_2;
-const uint8_t PWM_PIN = REGISTER_GPIO_PIN_0;
-const uint8_t EN_PIN = REGISTER_GPIO_PIN_1;
+const uint8_t MOTOR_0_INA_PIN = REGISTER_GPIO_PIN_6;
+const uint8_t MOTOR_0_INB_PIN = REGISTER_GPIO_PIN_2;
+const uint8_t MOTOR_0_PWM_PIN = REGISTER_GPIO_PIN_0;
+const uint8_t MOTOR_0_EN_PIN = REGISTER_GPIO_PIN_1;
 
 const uint32_t REGISTER_GPIO_F_BASE = REGISTER_GPIO_BASE + 0x59000;
-volatile uint32_t * const REGISTER_GPIO_F_GPIODR = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODR_OFFSET + (INB_PIN << 2));
+volatile uint32_t * const REGISTER_GPIO_F_GPIODR = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_INB_PIN << 2));
 volatile uint32_t * const REGISTER_GPIO_F_GPIODIR = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
 volatile uint32_t * const REGISTER_GPIO_F_GPIODEN = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
 
@@ -38,15 +38,60 @@ const uint32_t REGISTER_GPIO_H_BASE = REGISTER_GPIO_BASE + 0x5B000;
 // volatile uint32_t * const REGISTER_GPIO_H_GPIODEN = (uint32_t *)(REGISTER_GPIO_H_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
 
 const uint32_t REGISTER_GPIO_K_BASE = REGISTER_GPIO_BASE + 0x5D000;
-volatile uint32_t * const REGISTER_GPIO_K_GPIODR = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODR_OFFSET + (INA_PIN << 2));
+volatile uint32_t * const REGISTER_GPIO_K_GPIODR = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_INA_PIN << 2));
 volatile uint32_t * const REGISTER_GPIO_K_GPIODIR = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
 volatile uint32_t * const REGISTER_GPIO_K_GPIODEN = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
 
 const uint32_t REGISTER_GPIO_N_BASE = REGISTER_GPIO_BASE + 0x60000;
-volatile uint32_t * const REGISTER_GPIO_N_GPIODR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODR_OFFSET + (EN_PIN << 2));
+volatile uint32_t * const REGISTER_GPIO_N_GPIODR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_EN_PIN << 2));
 volatile uint32_t * const REGISTER_GPIO_N_GPIODIR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
 volatile uint32_t * const REGISTER_GPIO_N_GPIOODR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIOODR_OFFSET);
 volatile uint32_t * const REGISTER_GPIO_N_GPIODEN = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
+
+//ADD: GPIO ports M and G
+
+typedef struct {
+    uint32_t gpioBase;
+    uint8_t pinBitmask;
+    volatile uint32_t * const DR;
+} Pin;
+
+typedef struct {
+    Pin INA;
+    Pin INB;
+    Pin EN;
+    Pin PWM;
+} MotorPins;
+
+MotorPins motorPins[] = {
+    {
+        {
+            REGISTER_GPIO_K_BASE,
+            REGISTER_GPIO_PIN_6
+        },
+        {
+            REGISTER_GPIO_F_BASE,
+            REGISTER_GPIO_PIN_2,
+        },
+        {
+            REGISTER_GPIO_N_BASE,
+            REGISTER_GPIO_PIN_1
+        },
+        {
+            REGISTER_GPIO_H_BASE,
+            REGISTER_GPIO_PIN_0
+        }
+    },
+    {
+
+    },
+    {
+
+    },
+    {
+
+    },
+};
 
 const uint32_t REGISTER_PWM_BASE = 0x40028000;
 const uint32_t REGISTER_PWM_PWMENABLE_OFFSET = 0x8;
@@ -109,6 +154,11 @@ typedef struct {
 
 Motor motors[MOTOR_CHANNEL_COUNT];
 
+typedef struct {
+
+
+} MotorGPIOPorts;
+
 int8_t motor_init(void) {
     for (uint8_t i = 0; i < MOTOR_CHANNEL_COUNT; i++) {
         Motor *motor = &motors[i];
@@ -123,7 +173,7 @@ int8_t motor_init(void) {
     sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_PWM_OFFSET, REGISTER_SYSCTL_PERIPHCTL_PWM_0_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_PWM_1_INSTANCEMASK);
     sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET, REGISTER_SYSCTL_PERIPHCTL_GPIO_F_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_K_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_N_INSTANCEMASK);
 
-    gpio_enableAltPinFunc(REGISTER_GPIO_H_BASE, PWM_PIN, REGISTER_GPIO_GPIOPCTL_H_PWM);
+    gpio_enableAltPinFunc(REGISTER_GPIO_H_BASE, MOTOR_0_PWM_PIN, REGISTER_GPIO_GPIOPCTL_H_PWM);
 
     *REGISTER_PWM_0_PWMENABLE &= ~REGISTER_PWM_PWMENABLE_ALL;
     //Maybe use count down because then the enable line doesn't have to be worried about, but it may never get to 100% duty cycle. TESTa
@@ -145,8 +195,6 @@ int8_t motor_init(void) {
 
     *REGISTER_PWM_0_PWM0CTL |= REGISTER_PWM_PWM0CTL_ENABLE;
 
-
-
     /*
     > mrw 0x40028000 //PWMCTL sync
     0x0
@@ -164,19 +212,19 @@ int8_t motor_init(void) {
     0xb00
     */
 
-    *REGISTER_GPIO_F_GPIODIR |= INB_PIN;
-    *REGISTER_GPIO_K_GPIODIR |= INA_PIN;
-    *REGISTER_GPIO_N_GPIODIR |= EN_PIN;
+    *REGISTER_GPIO_F_GPIODIR |= MOTOR_0_INB_PIN;
+    *REGISTER_GPIO_K_GPIODIR |= MOTOR_0_INA_PIN;
+    *REGISTER_GPIO_N_GPIODIR |= MOTOR_0_EN_PIN;
 
-    *REGISTER_GPIO_F_GPIODR |= INB_PIN;
-    *REGISTER_GPIO_K_GPIODR &= ~INA_PIN;
-    *REGISTER_GPIO_N_GPIODR &= ~EN_PIN;
+    *REGISTER_GPIO_F_GPIODR |= MOTOR_0_INB_PIN;
+    *REGISTER_GPIO_K_GPIODR &= ~MOTOR_0_INA_PIN;
+    *REGISTER_GPIO_N_GPIODR &= ~MOTOR_0_EN_PIN;
 
-    *REGISTER_GPIO_N_GPIOODR |= EN_PIN;
+    *REGISTER_GPIO_N_GPIOODR |= MOTOR_0_EN_PIN;
     
-    *REGISTER_GPIO_F_GPIODEN |= INB_PIN;
-    *REGISTER_GPIO_K_GPIODEN |= INA_PIN;
-    *REGISTER_GPIO_N_GPIODEN |= EN_PIN;
+    *REGISTER_GPIO_F_GPIODEN |= MOTOR_0_INB_PIN;
+    *REGISTER_GPIO_K_GPIODEN |= MOTOR_0_INA_PIN;
+    *REGISTER_GPIO_N_GPIODEN |= MOTOR_0_EN_PIN;
 
     return 0;
 }
@@ -207,9 +255,9 @@ int8_t motor_setEnabled(uint8_t channel, uint8_t enabled) {
     } 
 
     if(enabled) {
-        *REGISTER_GPIO_N_GPIODR |= EN_PIN;
+        *REGISTER_GPIO_N_GPIODR |= MOTOR_0_EN_PIN;
     } else {
-        *REGISTER_GPIO_N_GPIODR &= ~EN_PIN;
+        *REGISTER_GPIO_N_GPIODR &= ~MOTOR_0_EN_PIN;
     }
 
     
@@ -247,11 +295,11 @@ int8_t motor_setPower(uint8_t channel, int16_t power) {
     } else {
 
         if(power > 0) {
-            *REGISTER_GPIO_F_GPIODR &= ~INB_PIN;
-            *REGISTER_GPIO_K_GPIODR |= INA_PIN;
+            *REGISTER_GPIO_F_GPIODR &= ~MOTOR_0_INB_PIN;
+            *REGISTER_GPIO_K_GPIODR |= MOTOR_0_INA_PIN;
         } else if(power < 0) {
-            *REGISTER_GPIO_F_GPIODR |= INB_PIN;
-            *REGISTER_GPIO_K_GPIODR &= ~INA_PIN;
+            *REGISTER_GPIO_F_GPIODR |= MOTOR_0_INB_PIN;
+            *REGISTER_GPIO_K_GPIODR &= ~MOTOR_0_INA_PIN;
 
             //If we didn't do this when we try to invert INT16_MIN we would just get INT16_MIN
             if(power == INT16_MIN) {

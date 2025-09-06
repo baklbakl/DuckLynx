@@ -18,7 +18,7 @@ https://github.com/REVrobotics/node-rhsplib/tree/main/packages/rhsplib/librhsp
 - Valid Packet = a packet that has the correct format, but may have an invalid command or payload
 
 ## Timeout
-If a hub hasn't received a packet in two seconds it goes into timeout mode. In this mode the led will indicate the timeout event to the user and all motion will be stopped by going into failsafe mode. Any packet that is valid packet bound for a hub will reset its timeout even if the packet gets nacked. Packets are not valid including ones with bad checksums or ones that don't have the magic number will not reset the timeout.
+If a hub hasn't received a packet in 2500 ms it goes into timeout mode. In this mode the led will indicate the timeout event to the user and all motion will be stopped by going into failsafe mode. Any packet that is valid packet bound for a hub will reset its timeout even if the packet gets nacked. Packets are not valid including ones with bad checksums or ones that don't have the magic number will not reset the timeout.
 
 ## Packet format
 
@@ -84,18 +84,18 @@ Only ever a reply
 <!-- ADD: list of NACK codes -->
 
 ### GET_MODULE_STATUS = 0x7f03
-Gets the status of a module
+Gets the status of a module.
 #### Payload 
 ```
 [0] (bool) Clear status after response
 ```
 
 #### Response Payload
-For the lynx at least, maybe not the servo hub
+For the lynx at least, maybe not the servo hub. After reset only the Device Reset bit should be set. The Battery Low bit is set when the batter is below 7 volts. It triggers a failsafe and also indicates on the LED.
 ```
 [0] Module Status
    [0] Keep Alive Timeout
-   [1] Device Reset - device has come up from reset?
+   [1] Device Reset - device has come up from reset
    [2] Fail Safe - should be on when the battery level is too low to run, when there is a keep alive timeout 
    [3] Controller Over Temp
    [4] Battery Low
