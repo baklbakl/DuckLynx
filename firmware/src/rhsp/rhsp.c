@@ -114,70 +114,6 @@ const Interface interfaces[] = {
 
 const uint16_t interfaceCount = sizeof(interfaces) / sizeof(Interface);
 
-typedef enum : uint8_t {
-    // 0-9 are for params
-    RHSP_NACK_PARAM_0_WRONG = 0,
-    RHSP_NACK_PARAM_1_WRONG = 1,
-    RHSP_NACK_PARAM_2_WRONG = 2,
-    RHSP_NACK_PARAM_3_WRONG = 3,
-    RHSP_NACK_PARAM_4_WRONG = 4,
-    RHSP_NACK_PARAM_5_WRONG = 5,
-    RHSP_NACK_PARAM_6_WRONG = 6,
-    RHSP_NACK_PARAM_7_WRONG = 7,
-    RHSP_NACK_PARAM_8_WRONG = 8,
-    RHSP_NACK_PARAM_9_WRONG = 9,
-
-    // 10-19 are for GPIO output
-    RHSP_NACK_GPIO_0_NOT_OUTPUT = 10,
-    RHSP_NACK_GPIO_1_NOT_OUTPUT = 11,
-    RHSP_NACK_GPIO_2_NOT_OUTPUT = 12,
-    RHSP_NACK_GPIO_3_NOT_OUTPUT = 13,
-    RHSP_NACK_GPIO_4_NOT_OUTPUT = 14,
-    RHSP_NACK_GPIO_5_NOT_OUTPUT = 15,
-    RHSP_NACK_GPIO_6_NOT_OUTPUT = 16,
-    RHSP_NACK_GPIO_7_NOT_OUTPUT = 17,
-    RHSP_NACK_GPIO_ALL_NOT_OUTPUT = 18,
-    // NACK 19 is reserved
-
-    // 20-29 are for GPIO input
-    RHSP_NACK_GPIO_0_NOT_INPUT = 20,
-    RHSP_NACK_GPIO_1_NOT_INPUT = 21,
-    RHSP_NACK_GPIO_2_NOT_INPUT = 22,
-    RHSP_NACK_GPIO_3_NOT_INPUT = 23,
-    RHSP_NACK_GPIO_4_NOT_INPUT = 24,
-    RHSP_NACK_GPIO_5_NOT_INPUT = 25,
-    RHSP_NACK_GPIO_6_NOT_INPUT = 26,
-    RHSP_NACK_GPIO_7_NOT_INPUT = 27,
-    RHSP_NACK_GPIO_ALL_NOT_INPUT = 28,
-    // NACK 29 is reserved
-
-    // 30-39 are for servos
-    RHSP_NACK_SERVO_NOT_CONFIGURED_BEFORE_ENABLE = 30,
-    RHSP_NACK_SERVO_CANT_RUN_BATTERY_TOO_LOW = 31,
-    // NACKs 32-39 are reserved
-
-    // 40-49 are for i2c
-    RHSP_NACK_I2C_MASTER_BUSY = 40,
-    RHSP_NACK_I2C_PENDING = 41,
-    RHSP_NACK_I2C_NOTHING_PENDING = 42,
-    RHSP_NACK_I2C_QUERY_MISMATCH = 43,
-    RHSP_NACK_I2C_TIMEOUT_SDA_STUCK = 44,
-    RHSP_NACK_I2C_TIMEOUT_SCL_STUCK = 45,
-    RHSP_NACK_I2C_TIMEOUT = 46,
-    // NACKs 47-49 are reserved
-
-    // 50-59 are for motors
-    RHSP_NACK_MOTOR_NOT_CONFIGURED_BEFORE_ENABLE = 50,
-    RHSP_NACK_MOTOR_INVALID_COMMAND_FOR_MODE = 51,
-    RHSP_NACK_MOTOR_CANT_RUN_BATTERY_TOO_LOW = 52,
-    // NACKs 53-59 are reserved
-
-    //There are a few codes at the end for debugging
-    RHSP_NACK_COMMAND_IMPLEMENTATION_PENDING = 253,
-    RHSP_NACK_COMMAND_ROUTING_ERROR = 254,
-    RHSP_NACK_UNKNOWN_COMMAND_ID = 255
-} RHSP_NACK;
-
 union packetType {
     //Size one just to make the compiler happy
     uint8_t buffer[1];
@@ -279,9 +215,9 @@ void sendPacket(void) {
     packet->decoded.srcAddress = rhspAddress;
     packet->decoded.referenceNumber = packet->decoded.messageNumber;
     packet->buffer[packet->decoded.packetSize-1] = calcChecksum();
-    debugUART_printString("Sending response: ");
-    printBuffer();
-    debugUART_printChar('\n');
+    // debugUART_printString("Sending response: ");
+    // printBuffer();
+    // debugUART_printChar('\n');
     
     rhspUART_send(packet->buffer, packet->decoded.packetSize);
 }
@@ -295,6 +231,14 @@ void sendNACK(RHSP_NACK nackCode) {
     packet->decoded.command = RHSP_COMMAND_NACK;
     packet->decoded.packetSize = 1;
     packet->decoded.payload[0] = nackCode;
+
+    packet->decoded.packetSize += RHSP_PACKET_MIN_SIZE;
+
+    debugUART_printString("Sent nack: ");
+    printBuffer();
+    debugUART_printChar('\n');
+
+    packet->decoded.packetSize -= RHSP_PACKET_MIN_SIZE;
 
     sendPacket();
 }
@@ -311,27 +255,14 @@ void sendACK(void) {
     sendPacket();
 }
 
-// void setupLEDPattern(LED_MODE mode, led_Pattern *pattern) {
-//     if(led_mode == LED_MODE_NO_BATTERY) {
-//         led_oldMode = mode;
-//         led_oldPattern = pattern;
-
-//     } else {
-//         led_mode = mode;
-//         led_currentPattern = pattern;
-//         led_currentPatternStep = 0;
-//         led_lastStepTime = *timer_value;
-        
-//         led_PatternStep step = led_currentPattern->steps[led_currentPatternStep];
-//         led_setColor(step.red, step.green, step.blue);
-//     }
-// }
-
 const char versionString[] = "HW: 20, Maj: 1, Min: 8, Eng: 2";
-const uint8_t versionStringLength = sizeof(versionString) / sizeof(char);
+//Subtract 1 to skip null byte because it messes up the RC
+const uint8_t versionStringLength = sizeof(versionString) / sizeof(char) - 1;
 
 //The timer value can never be UINT32_MAX as it starts at one less than that, so if rhsp_lastCommandTime equals UINT32_MAX, then it must be timed out from reset
 volatile uint32_t rhsp_lastCommandTime = UINT32_MAX;
+
+uint8_t phoneChargingEnabled = 0;
 
 RHSP_PARSE_RESULT handlePacket(void) {
     debugUART_printString("Packet received: ");
@@ -377,7 +308,8 @@ RHSP_PARSE_RESULT handlePacket(void) {
         sendReadPacket();
 
         if(resetStatus) {
-            rhsp_moduleStatus = 0;
+            //Don't allow resetStatus to reset battery low or controller over temperature
+            rhsp_moduleStatus &= (RHSP_MODULE_STATUS_BATTERY_LOW | RHSP_MODULE_STATUS_CONTROLLER_OVER_TEMP);
             motorAlerts = 0;
         }
 
@@ -400,10 +332,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         led_userPattern.steps[0].green = packet->decoded.payload[1];
         led_userPattern.steps[0].blue = packet->decoded.payload[2];
         led_setupPattern(LED_MODE_USER, &led_userPattern);
-
-        // led_setColor(packet->decoded.payload[0], packet->decoded.payload[1], packet->decoded.payload[2]);
-        // led_currentPattern = 0;
-        // led_mode = LED_MODE_USER;
+        led_dumpPattern();
 
         sendACK();
         break;
@@ -415,7 +344,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_SET_MODULE_LED_PATTERN:
-        if(packet->decoded.packetSize != LED_MAX_PATTERN_STEPS * sizeof(led_PatternStep)) {
+        if(packet->decoded.packetSize % sizeof(led_PatternStep) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
         }
 
@@ -434,7 +363,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         led_userPattern.totalSteps = i;
         led_setupPattern(LED_MODE_USER, &led_userPattern);
 
-        // led_dumpPattern();
+        led_dumpPattern();
 
         sendACK();
         break;
@@ -554,7 +483,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         }
 
         ADC_CHANNEL adcChannel = packet->decoded.payload[0];
-        if(!adc_readMapped(adcChannel, ((int16_t *) packet->decoded.payload), rawMode)) {
+        if(adc_readMapped(adcChannel, ((int16_t *) packet->decoded.payload), rawMode)) {
             sendNACK(RHSP_NACK_COMMAND_IMPLEMENTATION_PENDING);
             break;
         }
@@ -567,21 +496,33 @@ RHSP_PARSE_RESULT handlePacket(void) {
         sendNACK(RHSP_NACK_COMMAND_IMPLEMENTATION_PENDING);
         break;
 
-    //ADD: Get mad about enable before configure
-    //ADD: Don't let motor run if the power is too low and send a NACK
     case RHSP_COMMAND_DEKA_SET_MOTOR_CHANNEL_ENABLE:
         if(packet->decoded.packetSize < 2) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         uint8_t enabled = packet->decoded.payload[1];
         //Make sure enabled is either 0 or 1. We don't have to check that enabled is less than 0 because it is unsigned.
         if(enabled > 1) {
             sendNACK(RHSP_NACK_PARAM_1_WRONG);
+            break;
         } 
+
+        // debugUART_printString("rhsp_moduleStatus: 0x");
+        // debugUART_printU8Hex(rhsp_moduleStatus);
+        // debugUART_printChar('\n');
+
+        if(rhsp_moduleStatus & RHSP_MODULE_STATUS_BATTERY_LOW) {
+            sendNACK(RHSP_NACK_MOTOR_CANT_RUN_BATTERY_TOO_LOW);
+            break;
+        }
         
-        if(motor_setEnabled(packet->decoded.payload[0], enabled) != 0) {
-            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+        RHSP_NACK nackCode = motor_setEnabled(packet->decoded.payload[0], enabled);
+
+        if(nackCode != RHSP_NACK_NO_NACK) {
+            sendNACK(nackCode);
+            break;
         }
 
         sendACK();
@@ -590,10 +531,12 @@ RHSP_PARSE_RESULT handlePacket(void) {
     case RHSP_COMMAND_DEKA_GET_MOTOR_CHANNEL_ENABLE:
         if(packet->decoded.packetSize < 1) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         if(motor_getEnabled(packet->decoded.payload[0], &enabled) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         packet->decoded.payload[0] = enabled;
@@ -605,11 +548,13 @@ RHSP_PARSE_RESULT handlePacket(void) {
     case RHSP_COMMAND_DEKA_SET_MOTOR_CONSTANT_POWER:
         if(packet->decoded.packetSize < 3) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         //The pointer spaghetti for the power field gets the int16_t value at an offset of 1 into the payload.
         if(motor_setPower(packet->decoded.payload[0], *(int16_t *)(&packet->decoded.payload[1])) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         sendACK();
@@ -618,14 +563,44 @@ RHSP_PARSE_RESULT handlePacket(void) {
     case RHSP_COMMAND_DEKA_GET_MOTOR_CONSTANT_POWER:
         if(packet->decoded.packetSize < 1) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
 
         packet->decoded.packetSize = 2;
 
         if(motor_getPower(packet->decoded.payload[0], (int16_t *)(&packet->decoded.payload[0])) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
         }
         
+        sendReadPacket();
+        break;
+
+    case RHSP_COMMAND_DEKA_PHONE_CHARGE_CONTROL:
+        if(packet->decoded.packetSize != 1) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        uint8_t newPhoneChargeEnabled = packet->decoded.payload[0];
+        //Booleans must be zero or one. Unsigned means nothing less than 0.
+        if(newPhoneChargeEnabled > 1) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        phoneChargingEnabled = newPhoneChargeEnabled;
+        sendACK();
+        break;
+        
+    case RHSP_COMMAND_DEKA_PHONE_CHARGE_QUERY:
+        if(packet->decoded.packetSize != 0) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        packet->decoded.packetSize = 1;
+        packet->decoded.payload[0] = phoneChargingEnabled;
         sendReadPacket();
         break;
 
@@ -683,8 +658,6 @@ RHSP_PARSE_RESULT handlePacket(void) {
 
     case RHSP_COMMAND_DEKA_FTDI_RESET_CONTROL:
     case RHSP_COMMAND_DEKA_FTDI_RESET_QUERY:
-    case RHSP_COMMAND_DEKA_PHONE_CHARGE_CONTROL:
-    case RHSP_COMMAND_DEKA_PHONE_CHARGE_QUERY:
 
     case RHSP_COMMAND_DEKA_READ_VERSION:
 

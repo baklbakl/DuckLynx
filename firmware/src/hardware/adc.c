@@ -223,7 +223,7 @@ int8_t adc_readMapped(ADC_CHANNEL channel, int16_t * outValue, uint8_t raw) {
     return 0;
 }
 
-uint32_t adc_lastBatteryVoltageReadTime = UINT32_MAX;
+uint32_t adc_lastBatteryVoltageReadTime = UINT32_MAX;;
 
 void adc_checkBatteryVoltage(uint32_t currentTime) {
     adc_lastBatteryVoltageReadTime = currentTime;

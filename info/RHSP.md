@@ -152,8 +152,47 @@ Sets the color of the multicolor LED on the lynx
 ```
 
 ### GET_MODULE_LED_COLOR = 0x7f0b
+Gets the color of the multicolor LED on the lynx. It returns the currently showing color even if that is part of a pattern
+
+#### Response Payload
+```
+[0] Red value
+[1] Green value
+[2] Blue value
+```
+
 ### SET_MODULE_LED_PATTERN = 0x7f0c
+Sends a list of times and colors for the led to follow. The packet may contain up to 16 steps. To terminate the packet before step 16 a step of all zeros is sent.
+
+#### Step
+```
+[0] Tenths of seconds for this step
+[1] Blue 
+[2] Green
+[3] Red
+```
+
+#### Payload
+```
+[0..3] Step 0
+[4..7] Step 1
+...
+[60..63] Step 15
+```
+
 ### GET_MODULE_LED_PATTERN = 0x7f0d
+Gets the current pattern being displayed. Can also not transmit all 16 steps
+<!-- TEST: Does this pattern include the low power or connected one? -->
+
+#### Response Payload
+See `Step` from SET_MODULE_LED_PATTERN
+```
+[0..3] Step 0
+[4..7] Step 1
+...
+[60..63] Step 15
+```
+
 ### DEBUG_LOG_LEVEL = 0x7f0e
 
 ### DISCOVERY = 0x7f0f
@@ -286,7 +325,21 @@ Gets the power of a motor
 ### I2C_WRITE_STATUS_QUERY = 0x2A
 ### I2C_CONFIGURE_CHANNEL = 0x2B
 ### PHONE_CHARGE_CONTROL = 0x2C
+Enabled phone charging that is no longer supported by any comp legal phones
+
+#### Payload 
+```
+[0] (bool) Enable
+```
+
 ### PHONE_CHARGE_QUERY = 0x2D
+Check if phone charging is enabled.
+
+#### Response Payload 
+```
+[0] (bool) Enabled
+```
+
 ### INJECT_DATA_LOG_HINT = 0x2E
 ### I2C_CONFIGURE_QUERY = 0x2F
 ### READ_VERSION_STRING = 0x30

@@ -33,10 +33,9 @@ uint16_t adc_readTemp();
 
 void adc_checkBatteryVoltage(uint32_t currentTime);
 
-static const uint32_t ADC_BATTERY_VOLTAGE_READ_INTERVAL = TIMER_TICKS_PER_100MS * 5;
+static const uint32_t ADC_BATTERY_VOLTAGE_READ_INTERVAL = TIMER_TICKS_PER_100MS * 2;
 //7000 mv, so 7v
 static const int16_t ADC_LOW_BATTERY_CUTOFF_VOLTAGE = 7000;
 extern uint32_t adc_lastBatteryVoltageReadTime;
-
 
 #endif

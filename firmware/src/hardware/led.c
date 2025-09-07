@@ -184,13 +184,13 @@ int8_t led_init(void) {
 }
 
 void led_setColor(const uint8_t red, const uint8_t green, const uint8_t blue) {
-    debugUART_printString("Setting color to: {r: ");
-    debugUART_printU8Hex(red);
-    debugUART_printString(", g: ");
-    debugUART_printU8Hex(green);
-    debugUART_printString(", b: ");
-    debugUART_printU8Hex(blue);
-    debugUART_printString("}\n");
+    // debugUART_printString("Setting color to: {r: ");
+    // debugUART_printU8Hex(red);
+    // debugUART_printString(", g: ");
+    // debugUART_printU8Hex(green);
+    // debugUART_printString(", b: ");
+    // debugUART_printU8Hex(blue);
+    // debugUART_printString("}\n");
 
     //These registers are 32 bits wide, so we don't need to worry about preserving the other bits
     *REGISTER_GPTM_W0_GPTMTAMATCHR = red;

@@ -1,6 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 
+#include "rhsp/rhsp.h"
 #include <stdint.h>
 
 typedef enum : uint8_t {
@@ -22,7 +23,7 @@ enum : uint8_t {
 int8_t motor_init(void);
 
 int8_t motor_getEnabled(uint8_t channel, uint8_t * enabled);
-int8_t motor_setEnabled(uint8_t channel, uint8_t enabled);
+RHSP_NACK motor_setEnabled(uint8_t channel, uint8_t enabled);
 int8_t motor_getPower(uint8_t channel, int16_t * power);
 int8_t motor_setPower(uint8_t channel, int16_t power);
 
