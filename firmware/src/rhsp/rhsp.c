@@ -567,6 +567,8 @@ RHSP_PARSE_RESULT handlePacket(void) {
         sendNACK(RHSP_NACK_COMMAND_IMPLEMENTATION_PENDING);
         break;
 
+    //ADD: Get mad about enable before configure
+    //ADD: Don't let motor run if the power is too low and send a NACK
     case RHSP_COMMAND_DEKA_SET_MOTOR_CHANNEL_ENABLE:
         if(packet->decoded.packetSize < 2) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
@@ -593,10 +595,6 @@ RHSP_PARSE_RESULT handlePacket(void) {
         if(motor_getEnabled(packet->decoded.payload[0], &enabled) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
         }
-
-        debugUART_printString("Enabled: ");
-        debugUART_printU8Hex(enabled);
-        debugUART_printChar('\n');
 
         packet->decoded.payload[0] = enabled;
         packet->decoded.packetSize = 1;

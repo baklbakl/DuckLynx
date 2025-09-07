@@ -92,6 +92,8 @@ LED 3825 package. About 1.6 mm tall. 6 pins
 #### To order
 XT30
 3 pin JST
+50 ohm 1% 0603 resistor for LED (check)
+More MCUs
 Motor controllers?
 
 ### Datasheet questions
@@ -301,15 +303,9 @@ Android Header to HIB (A to B) (Dir is high)
     - B MCU RST, TP2 (NRST) and FTDI CBUS0
 - CH 7-8 are unused and connected to GND through a 10 kΩ resistor
 
-### Current sensors
-https://github.com/WestsideRobotics/FTC-Power-Monitoring/wiki
-https://github.com/OpenFTC/RevExtensions2/tree/master/rev-extensions-2/src/main/java/org/openftc/revextensions2
-https://github.com/OpenFTC/Extracted-RC/blob/ce0a67af28c966c7a166ae51765e115a853734fc/Hardware/src/main/java/com/qualcomm/hardware/lynx/commands/core/LynxGetADCCommand.java#L66
-B
-
 ### MCU Pin Connections
-Overall temp sensor
-3.3V voltage sense?
+Overall temp sensor - in MCU
+3.3V voltage sense - doesn't exist
 
 #### FT230XQ
 PB1 (Bootconfig enter bootloader) FT230X Pin 11 (CBUS1) and TP3 (NPRG)

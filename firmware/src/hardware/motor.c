@@ -4,6 +4,10 @@
 #include "hardware/register.h"
 #include "sysctl.h"
 
+//
+// Sysctl
+//
+
 const uint32_t REGISTER_SYSCTL_RCC_PWMDIV_SHFIT = 17;
 const uint32_t REGISTER_SYSCTL_RCC_PWMDIV_MASK = 0b111 << REGISTER_SYSCTL_RCC_PWMDIV_SHFIT;
 const uint32_t REGISTER_SYSCTL_RCC_PWMDIV_DIV_16 = 0x3 << REGISTER_SYSCTL_RCC_PWMDIV_SHFIT;
@@ -11,6 +15,7 @@ const uint32_t REGISTER_SYSCTL_RCC_PWMDIV_DIV_64 = 0x5 << REGISTER_SYSCTL_RCC_PW
 const uint32_t REGISTER_SYSCTL_RCC_USEPWMDIV = 0b1 << 20;
 
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_F_INSTANCEMASK = 0b1 << 5;
+const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_G_INSTANCEMASK = 0b1 << 6;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK = 0b1 << 7;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_K_INSTANCEMASK = 0b1 << 9;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_N_INSTANCEMASK = 0b1 << 12;
@@ -19,79 +24,24 @@ const uint8_t REGISTER_SYSCTL_PERIPHCTL_PWM_OFFSET = 0x40;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_PWM_0_INSTANCEMASK = 0b1 << 0;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_PWM_1_INSTANCEMASK = 0b1 << 1;
 
-const uint32_t REGISTER_GPIO_GPIOODR_OFFSET = 0x50C;
-const uint32_t REGISTER_GPIO_GPIOPCTL_H_PWM = 0x4;
+//
+// GPIO
+//
 
-const uint8_t MOTOR_0_INA_PIN = REGISTER_GPIO_PIN_6;
-const uint8_t MOTOR_0_INB_PIN = REGISTER_GPIO_PIN_2;
-const uint8_t MOTOR_0_PWM_PIN = REGISTER_GPIO_PIN_0;
-const uint8_t MOTOR_0_EN_PIN = REGISTER_GPIO_PIN_1;
+const uint32_t REGISTER_GPIO_GPIOODR_OFFSET = 0x50C;
+//Both ports G and H
+const uint32_t REGISTER_GPIO_GPIOPCTL_H_PWM_M0 = 0x4;
+const uint32_t REGISTER_GPIO_GPIOPCTL_G_PWM_M1 = 0x5;
 
 const uint32_t REGISTER_GPIO_F_BASE = REGISTER_GPIO_BASE + 0x59000;
-volatile uint32_t * const REGISTER_GPIO_F_GPIODR = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_INB_PIN << 2));
-volatile uint32_t * const REGISTER_GPIO_F_GPIODIR = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
-volatile uint32_t * const REGISTER_GPIO_F_GPIODEN = (uint32_t *)(REGISTER_GPIO_F_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
-
+const uint32_t REGISTER_GPIO_G_BASE = REGISTER_GPIO_BASE + 0x5A000;
 const uint32_t REGISTER_GPIO_H_BASE = REGISTER_GPIO_BASE + 0x5B000;
-// volatile uint32_t * const REGISTER_GPIO_H_GPIODR = (uint32_t *)(REGISTER_GPIO_H_BASE + REGISTER_GPIO_GPIODR_OFFSET + (PWM_PIN << 2));
-// volatile uint32_t * const REGISTER_GPIO_H_GPIODIR = (uint32_t *)(REGISTER_GPIO_H_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
-// volatile uint32_t * const REGISTER_GPIO_H_GPIODEN = (uint32_t *)(REGISTER_GPIO_H_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
-
 const uint32_t REGISTER_GPIO_K_BASE = REGISTER_GPIO_BASE + 0x5D000;
-volatile uint32_t * const REGISTER_GPIO_K_GPIODR = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_INA_PIN << 2));
-volatile uint32_t * const REGISTER_GPIO_K_GPIODIR = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
-volatile uint32_t * const REGISTER_GPIO_K_GPIODEN = (uint32_t *)(REGISTER_GPIO_K_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
-
 const uint32_t REGISTER_GPIO_N_BASE = REGISTER_GPIO_BASE + 0x60000;
-volatile uint32_t * const REGISTER_GPIO_N_GPIODR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODR_OFFSET + (MOTOR_0_EN_PIN << 2));
-volatile uint32_t * const REGISTER_GPIO_N_GPIODIR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODIR_OFFSET);
-volatile uint32_t * const REGISTER_GPIO_N_GPIOODR = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIOODR_OFFSET);
-volatile uint32_t * const REGISTER_GPIO_N_GPIODEN = (uint32_t *)(REGISTER_GPIO_N_BASE + REGISTER_GPIO_GPIODEN_OFFSET);
 
-//ADD: GPIO ports M and G
-
-typedef struct {
-    uint32_t gpioBase;
-    uint8_t pinBitmask;
-    volatile uint32_t * const DR;
-} Pin;
-
-typedef struct {
-    Pin INA;
-    Pin INB;
-    Pin EN;
-    Pin PWM;
-} MotorPins;
-
-MotorPins motorPins[] = {
-    {
-        {
-            REGISTER_GPIO_K_BASE,
-            REGISTER_GPIO_PIN_6
-        },
-        {
-            REGISTER_GPIO_F_BASE,
-            REGISTER_GPIO_PIN_2,
-        },
-        {
-            REGISTER_GPIO_N_BASE,
-            REGISTER_GPIO_PIN_1
-        },
-        {
-            REGISTER_GPIO_H_BASE,
-            REGISTER_GPIO_PIN_0
-        }
-    },
-    {
-
-    },
-    {
-
-    },
-    {
-
-    },
-};
+//
+// PWM
+//
 
 const uint32_t REGISTER_PWM_BASE = 0x40028000;
 const uint32_t REGISTER_PWM_PWMENABLE_OFFSET = 0x8;
@@ -109,93 +59,204 @@ const uint32_t REGISTER_PWM_PWMENABLE_ALL = REGISTER_PWM_PWMENABLE_PWM0EN | REGI
                                             REGISTER_PWM_PWMENABLE_PWM4EN | REGISTER_PWM_PWMENABLE_PWM5EN | 
                                             REGISTER_PWM_PWMENABLE_PWM6EN | REGISTER_PWM_PWMENABLE_PWM7EN;
 
-const uint32_t REGISTER_PWM_PWM0LOAD_OFFSET = 0x50;
+const uint32_t REGISTER_PWM_PWMnLOAD_OFFSET = 0x10;
 const uint32_t REGISTER_PWM_PWM0LOAD_MASK = 0xFFFF;
-const uint32_t REGISTER_PWM_PWM0CTL_OFFSET = 0x40;
-const uint32_t REGISTER_PWM_PWM0CTL_ENABLE = 0b1 << 0;
-const uint32_t REGISTER_PWM_PWM0CTL_COUNTER_OFFSET = 1;
-const uint32_t REGISTER_PWM_PWM0CTL_COUNTER_UP_DOWN = 1 << REGISTER_PWM_PWM0CTL_COUNTER_OFFSET;
-const uint32_t REGISTER_PWM_PWM0CTL_COUNTER_DOWN = 0 << REGISTER_PWM_PWM0CTL_COUNTER_OFFSET;
+const uint32_t REGISTER_PWM_PWMnCTL_OFFSET = 0x0;
+const uint32_t REGISTER_PWM_PWMnCTL_ENABLE = 0b1 << 0;
+const uint32_t REGISTER_PWM_PWMnCTL_COUNTER_OFFSET = 1;
+const uint32_t REGISTER_PWM_PWMnCTL_COUNTER_UP_DOWN = 1 << REGISTER_PWM_PWMnCTL_COUNTER_OFFSET;
+const uint32_t REGISTER_PWM_PWMnCTL_COUNTER_DOWN = 0 << REGISTER_PWM_PWMnCTL_COUNTER_OFFSET;
 
-const uint32_t REGISTER_PWM_PWM0CMPA_OFFSET = 0x58;
-const uint32_t REGISTER_PWM_PWM0CMPB_OFFSET = 0x5C;
-const uint32_t REGISTER_PWM_PWM0CMPn_MASK = 0xFFFF;
-const uint32_t REGISTER_PWM_PWM0GENA_OFFSET = 0x60;
-const uint32_t REGISTER_PWM_PWM0GENB_OFFSET = 0x64;
+const uint32_t REGISTER_PWM_PWMnCMPA_OFFSET = 0x18;
+const uint32_t REGISTER_PWM_PWMnCMPB_OFFSET = 0x1C;
+const uint32_t REGISTER_PWM_PWMnCMPn_MASK = 0xFFFF;
+const uint32_t REGISTER_PWM_PWMnGENA_OFFSET = 0x20;
+const uint32_t REGISTER_PWM_PWMnGENB_OFFSET = 0x24;
 
 const uint32_t REGISTER_PWM_PWMnGENn_ACTn_MASK = 0b11;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTZERO_OFFSET = 0;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTCMPAU_OFFSET = 4;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTCMPAD_OFFSET = 6;
+const uint32_t REGISTER_PWM_PWMnGENn_ACTCMPBU_OFFSET = 8;
+const uint32_t REGISTER_PWM_PWMnGENn_ACTCMPBD_OFFSET = 10;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTn_NOTHING = 0x0;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTn_INVERT = 0x1;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTn_LOW = 0x2;
 const uint32_t REGISTER_PWM_PWMnGENn_ACTn_HIGH = 0x3;
 
+//Starting offset
+const uint32_t REGISTER_PWM_GEN0_OFFSET = 0x40;
+//Offset from one generator to the next
+const uint32_t REGISTER_PWM_GEN_TO_GEN_OFFSET = 0x40;
+// const uint32_t REGISTER_PWM_GEN1_OFFSET = 0x80;
+// const uint32_t REGISTER_PWM_GEN2_OFFSET = 0xC0;
+// const uint32_t REGISTER_PWM_GEN3_OFFSET = 0x100;
+
 const uint32_t REGISTER_PWM_0_BASE = REGISTER_PWM_BASE + 0x0;
 volatile uint32_t * const REGISTER_PWM_0_PWMENABLE = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWMENABLE_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0LOAD = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0LOAD_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0CTL = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0CTL_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0CMPA = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0CMPA_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0CMPB = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0CMPB_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0GENA = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0GENA_OFFSET);
-volatile uint32_t * const REGISTER_PWM_0_PWM0GENB = (uint32_t *)(REGISTER_PWM_0_BASE + REGISTER_PWM_PWM0GENB_OFFSET);
 
-// const uint32_t REGISTER_PWM_1_0BASE = REGISTER_PWM_BASE + 0x1000;
+const uint32_t REGISTER_PWM_0_GEN0_BASE = REGISTER_PWM_0_BASE + REGISTER_PWM_GEN0_OFFSET;
+volatile uint32_t * const REGISTER_PWM_0_PWM0LOAD = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnLOAD_OFFSET);
+volatile uint32_t * const REGISTER_PWM_0_PWM0CTL = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnCTL_OFFSET);
+volatile uint32_t * const REGISTER_PWM_0_PWM0CMPA = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnCMPA_OFFSET);
+volatile uint32_t * const REGISTER_PWM_0_PWM0CMPB = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnCMPB_OFFSET);
+volatile uint32_t * const REGISTER_PWM_0_PWM0GENA = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnGENA_OFFSET);
+volatile uint32_t * const REGISTER_PWM_0_PWM0GENB = (uint32_t *)(REGISTER_PWM_0_GEN0_BASE + REGISTER_PWM_PWMnGENB_OFFSET);
 
+const uint32_t REGISTER_PWM_1_BASE = REGISTER_PWM_BASE + 0x1000;
+volatile uint32_t * const REGISTER_PWM_1_PWMENABLE = (uint32_t *)(REGISTER_PWM_1_BASE + REGISTER_PWM_PWMENABLE_OFFSET);
+
+const uint32_t REGISTER_PWM_1_GEN1_BASE = REGISTER_PWM_1_BASE + REGISTER_PWM_GEN0_OFFSET + REGISTER_PWM_GEN_TO_GEN_OFFSET;
+volatile uint32_t * const REGISTER_PWM_1_PWM1LOAD = (uint32_t *)(REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnLOAD_OFFSET);
+volatile uint32_t * const REGISTER_PWM_1_PWM1CTL = (uint32_t *) (REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnCTL_OFFSET);
+volatile uint32_t * const REGISTER_PWM_1_PWM1CMPA = (uint32_t *)(REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnCMPA_OFFSET);
+volatile uint32_t * const REGISTER_PWM_1_PWM1CMPB = (uint32_t *)(REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnCMPB_OFFSET);
+volatile uint32_t * const REGISTER_PWM_1_PWM1GENA = (uint32_t *)(REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnGENA_OFFSET);
+volatile uint32_t * const REGISTER_PWM_1_PWM1GENB = (uint32_t *)(REGISTER_PWM_1_GEN1_BASE + REGISTER_PWM_PWMnGENB_OFFSET);
+
+//This comes from the fact that we want a 10 KHz pwm clock, the system clock is 80 MHz,
+// and we need to be able to get down to 50 Hz for the servos. (80000000 / 16) / 10000 = 500
 const uint16_t PWM_RELOAD_VALUE = 500;
+
+typedef struct {
+    uint32_t gpioBase;
+    uint8_t pinBitmask;
+} Pin;
+
+typedef struct {
+    Pin INA;
+    Pin INB;
+    Pin EN;
+    struct {
+        uint32_t gpioBase;
+        uint8_t pinBitmask;
+        uint32_t pwmBase;
+        //Each PWM module has four possible generators in it
+        // uint32_t pwmNOffset;
+        uint8_t pwmBitmask;
+    } PWM;
+} MotorPins;
+
+//FIX: Add the rest of the channels
+const MotorPins motorPinsConsts[] = {
+    {
+        {
+            REGISTER_GPIO_K_BASE,
+            REGISTER_GPIO_PIN_6
+        },
+        {
+            REGISTER_GPIO_F_BASE,
+            REGISTER_GPIO_PIN_2,
+        },
+        {
+            REGISTER_GPIO_N_BASE,
+            REGISTER_GPIO_PIN_1
+        },
+        {
+            REGISTER_GPIO_H_BASE,
+            REGISTER_GPIO_PIN_0,
+            REGISTER_PWM_0_BASE,
+            // REGISTER_PWM_GEN0_OFFSET,
+            REGISTER_PWM_PWMENABLE_PWM0EN
+        }
+    },
+    {
+        {
+            REGISTER_GPIO_K_BASE,
+            REGISTER_GPIO_PIN_7
+        },
+        {
+            REGISTER_GPIO_F_BASE,
+            REGISTER_GPIO_PIN_3,
+        },
+        {
+            REGISTER_GPIO_N_BASE,
+            REGISTER_GPIO_PIN_0
+        },
+        {
+            REGISTER_GPIO_H_BASE,
+            REGISTER_GPIO_PIN_1,
+            REGISTER_PWM_0_BASE,
+            // REGISTER_PWM_GEN0_OFFSET,
+            REGISTER_PWM_PWMENABLE_PWM1EN
+        }
+    },
+    {
+        {
+            REGISTER_GPIO_G_BASE,
+            REGISTER_GPIO_PIN_6,
+        },
+        {
+            REGISTER_GPIO_K_BASE,
+            REGISTER_GPIO_PIN_2
+        },
+        {
+            REGISTER_GPIO_M_BASE,
+            REGISTER_GPIO_PIN_4
+        },
+        {
+            REGISTER_GPIO_G_BASE,
+            REGISTER_GPIO_PIN_4,
+            REGISTER_PWM_1_BASE,
+            REGISTER_PWM_PWMENABLE_PWM2EN
+        }
+    },
+    {
+        {
+            REGISTER_GPIO_G_BASE,
+            REGISTER_GPIO_PIN_7,
+        },
+        {
+            REGISTER_GPIO_K_BASE,
+            REGISTER_GPIO_PIN_3
+        },
+        {
+            REGISTER_GPIO_M_BASE,
+            REGISTER_GPIO_PIN_5
+        },
+        {
+            REGISTER_GPIO_G_BASE,
+            REGISTER_GPIO_PIN_5,
+            REGISTER_PWM_1_BASE,
+            REGISTER_PWM_PWMENABLE_PWM3EN
+        }
+    },
+};
 
 typedef struct {
     uint8_t enabled;
     MOTOR_MODE mode;
     int16_t power;
     MOTOR_ZERO_POWER_BEHAVIOR zeroPowerBehavior;
+    volatile uint32_t * gpioDR_INA;
+    volatile uint32_t * gpioDR_INB;
+    volatile uint32_t * gpioDR_EN;
+    volatile uint32_t * pwmCMPn;
+    volatile uint32_t * pwmEnable;
 } Motor;
 
 Motor motors[MOTOR_CHANNEL_COUNT];
 
-typedef struct {
-
-
-} MotorGPIOPorts;
-
 int8_t motor_init(void) {
-    for (uint8_t i = 0; i < MOTOR_CHANNEL_COUNT; i++) {
-        Motor *motor = &motors[i];
-        motor->enabled = 0;
-        motor->mode = 0;
-        motor->power = 0;
-        motor->zeroPowerBehavior = MOTOR_ZERO_POWER_BEHAVIOR_COAST;
-    }
-
     *REGISTER_SYSCTL_RCC = (*REGISTER_SYSCTL_RCC & ~REGISTER_SYSCTL_RCC_PWMDIV_MASK) | REGISTER_SYSCTL_RCC_PWMDIV_DIV_16 | REGISTER_SYSCTL_RCC_USEPWMDIV;
 
-    sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_PWM_OFFSET, REGISTER_SYSCTL_PERIPHCTL_PWM_0_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_PWM_1_INSTANCEMASK);
-    sysctl_enablePeripheral(REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET, REGISTER_SYSCTL_PERIPHCTL_GPIO_F_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_K_INSTANCEMASK | REGISTER_SYSCTL_PERIPHCTL_GPIO_N_INSTANCEMASK);
+    sysctl_enablePeripheral(
+        REGISTER_SYSCTL_PERIPHCTL_PWM_OFFSET, 
+        REGISTER_SYSCTL_PERIPHCTL_PWM_0_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_PWM_1_INSTANCEMASK
+    );
 
-    gpio_enableAltPinFunc(REGISTER_GPIO_H_BASE, MOTOR_0_PWM_PIN, REGISTER_GPIO_GPIOPCTL_H_PWM);
+    sysctl_enablePeripheral(
+        REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET,
+        REGISTER_SYSCTL_PERIPHCTL_GPIO_F_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_GPIO_G_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_GPIO_K_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_GPIO_M_INSTANCEMASK
+                     | REGISTER_SYSCTL_PERIPHCTL_GPIO_N_INSTANCEMASK
+    );
 
-    *REGISTER_PWM_0_PWMENABLE &= ~REGISTER_PWM_PWMENABLE_ALL;
-    //Maybe use count down because then the enable line doesn't have to be worried about, but it may never get to 100% duty cycle. TESTa
-    *REGISTER_PWM_0_PWM0CTL = (*REGISTER_PWM_0_PWM0CTL & ~REGISTER_PWM_PWM0CTL_ENABLE) | REGISTER_PWM_PWM0CTL_COUNTER_DOWN;
-    *REGISTER_PWM_0_PWM0GENA = 
-                        (
-                            *REGISTER_PWM_0_PWM0GENA
-                            & ~(REGISTER_PWM_PWMnGENn_ACTn_MASK << REGISTER_PWM_PWMnGENn_ACTZERO_OFFSET)
-                            & ~(REGISTER_PWM_PWMnGENn_ACTn_MASK << REGISTER_PWM_PWMnGENn_ACTCMPAU_OFFSET)
-                        ) 
-                        | REGISTER_PWM_PWMnGENn_ACTn_HIGH << REGISTER_PWM_PWMnGENn_ACTZERO_OFFSET
-                        | REGISTER_PWM_PWMnGENn_ACTn_LOW << REGISTER_PWM_PWMnGENn_ACTCMPAD_OFFSET
-    ;
-                    
-    //This comes from the fact that we want a 10 KHz pwm clock, the system clock is 80 MHz, and we need to be able to get down to 50 Hz for the servos. (80000000 / 16) / 10000 = 500
-    *REGISTER_PWM_0_PWM0LOAD = PWM_RELOAD_VALUE & REGISTER_PWM_PWM0LOAD_MASK;
-
-    // *REGISTER_PWM_0_PWM0CMPA = 250;
-
-    *REGISTER_PWM_0_PWM0CTL |= REGISTER_PWM_PWM0CTL_ENABLE;
-
-    /*
+        /*
     > mrw 0x40028000 //PWMCTL sync
     0x0
     > mrw 0x40028008 //Enable (only some motors enabled?)
@@ -208,34 +269,110 @@ int8_t motor_init(void) {
     0x3e
     > mrw 0x40028060 //GENA
     0xb0
-    > mrw 0x40028064
+    > mrw 0x40028064 //GENB
     0xb00
     */
 
-    *REGISTER_GPIO_F_GPIODIR |= MOTOR_0_INB_PIN;
-    *REGISTER_GPIO_K_GPIODIR |= MOTOR_0_INA_PIN;
-    *REGISTER_GPIO_N_GPIODIR |= MOTOR_0_EN_PIN;
-
-    *REGISTER_GPIO_F_GPIODR |= MOTOR_0_INB_PIN;
-    *REGISTER_GPIO_K_GPIODR &= ~MOTOR_0_INA_PIN;
-    *REGISTER_GPIO_N_GPIODR &= ~MOTOR_0_EN_PIN;
-
-    *REGISTER_GPIO_N_GPIOODR |= MOTOR_0_EN_PIN;
+    for (uint8_t i = 0; i < MOTOR_CHANNEL_COUNT; i++) {
+    //This may set some registers more than once per PWM generator or module, but it was easier to write without a bunch of extra checks
+    // for (uint8_t i = 0; i < 3; i++) {
+        Motor *motor = &motors[i];
+        motor->enabled = 0;
+        motor->mode = 0;
+        motor->power = 0;
+        motor->zeroPowerBehavior = MOTOR_ZERO_POWER_BEHAVIOR_COAST;
     
-    *REGISTER_GPIO_F_GPIODEN |= MOTOR_0_INB_PIN;
-    *REGISTER_GPIO_K_GPIODEN |= MOTOR_0_INA_PIN;
-    *REGISTER_GPIO_N_GPIODEN |= MOTOR_0_EN_PIN;
+        MotorPins pins = motorPinsConsts[i];
+
+        if(pins.PWM.pwmBase == REGISTER_PWM_0_BASE && pins.PWM.gpioBase == REGISTER_GPIO_H_BASE) {
+            gpio_enableAltPinFunc(pins.PWM.gpioBase, pins.PWM.pinBitmask, REGISTER_GPIO_GPIOPCTL_H_PWM_M0);    
+
+        } else if(pins.PWM.pwmBase == REGISTER_PWM_1_BASE && pins.PWM.gpioBase == REGISTER_GPIO_G_BASE) {
+            gpio_enableAltPinFunc(pins.PWM.gpioBase, pins.PWM.pinBitmask, REGISTER_GPIO_GPIOPCTL_G_PWM_M1);    
+
+        } else {
+            //Something went very wrong ...
+            return 1;
+        }
+
+        //Disable PWM output
+        motor->pwmEnable = (uint32_t *)(pins.PWM.pwmBase + REGISTER_PWM_PWMENABLE_OFFSET);
+        *(motor->pwmEnable) &= ~pins.PWM.pwmBitmask;
+
+        uint32_t pwmNBase = pins.PWM.pwmBase + REGISTER_PWM_GEN0_OFFSET;
+
+        //Each pair of PWM outputs from a module conresponds to a generator. To derive the offset into the pwm module's address space,
+        // add the generator to generator offset until the pin's generator is found.
+        for(uint8_t genMask = 0b11; genMask != 0; genMask = genMask << 2) {
+            if(genMask & pins.PWM.pwmBitmask) {
+                break;
+            }
+            pwmNBase += REGISTER_PWM_GEN_TO_GEN_OFFSET;
+        }
+
+        // uint32_t pwmNBase = pins.PWM.pwmBase + pins.PWM.pwmNOffset;
+
+        volatile uint32_t * const PWMnCTL = (uint32_t *)(pwmNBase + REGISTER_PWM_PWMnCTL_OFFSET);
+        *PWMnCTL = (*PWMnCTL & ~REGISTER_PWM_PWMnCTL_ENABLE) | REGISTER_PWM_PWMnCTL_COUNTER_DOWN;
+
+        volatile uint32_t * PWMnGENn = 0; 
+        uint32_t ACTCMPnD_offset = 0;
+
+        //Even pins use generator A and odd pins us generator B
+        if(pins.PWM.pwmBitmask & (REGISTER_PWM_PWMENABLE_PWM0EN | REGISTER_PWM_PWMENABLE_PWM2EN | REGISTER_PWM_PWMENABLE_PWM4EN | REGISTER_PWM_PWMENABLE_PWM6EN)) {
+            PWMnGENn = (uint32_t *)(pwmNBase + REGISTER_PWM_PWMnGENA_OFFSET);
+            motor->pwmCMPn = (uint32_t *)(pwmNBase + REGISTER_PWM_PWMnCMPA_OFFSET);
+            ACTCMPnD_offset = REGISTER_PWM_PWMnGENn_ACTCMPAD_OFFSET;
+
+        } else if(pins.PWM.pwmBitmask & (REGISTER_PWM_PWMENABLE_PWM1EN | REGISTER_PWM_PWMENABLE_PWM3EN | REGISTER_PWM_PWMENABLE_PWM5EN | REGISTER_PWM_PWMENABLE_PWM7EN)) {
+            PWMnGENn = (uint32_t *)(pwmNBase + REGISTER_PWM_PWMnGENB_OFFSET); 
+            motor->pwmCMPn = (uint32_t *)(pwmNBase + REGISTER_PWM_PWMnCMPB_OFFSET);
+            ACTCMPnD_offset = REGISTER_PWM_PWMnGENn_ACTCMPBD_OFFSET;
+
+        } else {
+            //Something went very wrong ...
+            return 1;
+        }
+
+        *PWMnGENn = 
+            (
+                *PWMnGENn
+                & ~(REGISTER_PWM_PWMnGENn_ACTn_MASK << REGISTER_PWM_PWMnGENn_ACTZERO_OFFSET)
+                & ~(REGISTER_PWM_PWMnGENn_ACTn_MASK << ACTCMPnD_offset)
+            ) 
+            | REGISTER_PWM_PWMnGENn_ACTn_HIGH << REGISTER_PWM_PWMnGENn_ACTZERO_OFFSET
+            | REGISTER_PWM_PWMnGENn_ACTn_LOW << ACTCMPnD_offset
+        ;
+
+        *((volatile uint32_t * const)(pwmNBase + REGISTER_PWM_PWMnLOAD_OFFSET)) = PWM_RELOAD_VALUE & REGISTER_PWM_PWM0LOAD_MASK;
+        *PWMnCTL |= REGISTER_PWM_PWMnCTL_ENABLE;
+
+        //Set all the GPIOs to outputs
+        *((volatile uint32_t * const)(pins.INA.gpioBase + REGISTER_GPIO_GPIODIR_OFFSET)) |= pins.INA.pinBitmask;
+        *((volatile uint32_t * const)(pins.INB.gpioBase + REGISTER_GPIO_GPIODIR_OFFSET)) |= pins.INB.pinBitmask;
+        *((volatile uint32_t * const)(pins.EN.gpioBase + REGISTER_GPIO_GPIODIR_OFFSET)) |= pins.EN.pinBitmask;
+
+        //Set all of the pins low and cache the DR for future use. It is okay that the driver is set to brake to ground because the driver is disabled and the PWM line is low
+        motor->gpioDR_INA = (uint32_t *)(pins.INA.gpioBase + REGISTER_GPIO_GPIODR_OFFSET + (pins.INA.pinBitmask << 2));
+        *motor->gpioDR_INA = 0;
+        
+        motor->gpioDR_INB = (uint32_t *)(pins.INB.gpioBase + REGISTER_GPIO_GPIODR_OFFSET + (pins.INB.pinBitmask << 2));
+        *motor->gpioDR_INB = 0;
+        
+        motor->gpioDR_EN = (uint32_t *)(pins.EN.gpioBase + REGISTER_GPIO_GPIODR_OFFSET + (pins.EN.pinBitmask << 2));
+        *motor->gpioDR_EN = 0;
+
+        //Open drain on enable pin
+        *((volatile uint32_t * const)(pins.EN.gpioBase + REGISTER_GPIO_GPIOODR_OFFSET)) |= pins.EN.pinBitmask;
+
+        //Enable the outputs
+        *((volatile uint32_t * const)(pins.INA.gpioBase + REGISTER_GPIO_GPIODEN_OFFSET)) |= pins.INA.pinBitmask;
+        *((volatile uint32_t * const)(pins.INB.gpioBase + REGISTER_GPIO_GPIODEN_OFFSET)) |= pins.INB.pinBitmask;
+        *((volatile uint32_t * const)(pins.EN.gpioBase + REGISTER_GPIO_GPIODEN_OFFSET)) |= pins.EN.pinBitmask;
+    }
 
     return 0;
 }
-
-// void motor_start(void) {
-//     *REGISTER_PWM_0_PWMENABLE |= REGISTER_PWM_PWMENABLE_PWM0EN;
-// }
-
-// void motor_stop(void) {
-//     *REGISTER_PWM_0_PWMENABLE &= ~REGISTER_PWM_PWMENABLE_PWM0EN;
-// }
 
 int8_t motor_setEnabled(uint8_t channel, uint8_t enabled) {
     if(channel >= MOTOR_CHANNEL_COUNT) {
@@ -249,17 +386,11 @@ int8_t motor_setEnabled(uint8_t channel, uint8_t enabled) {
 
     motor->enabled = enabled;
 
-    //FIX: Add the rest of the channels
-    if(channel != 0) {
-        return 0;
-    } 
-
     if(enabled) {
-        *REGISTER_GPIO_N_GPIODR |= MOTOR_0_EN_PIN;
+        *(motor->gpioDR_EN) |= motorPinsConsts[channel].EN.pinBitmask;
     } else {
-        *REGISTER_GPIO_N_GPIODR &= ~MOTOR_0_EN_PIN;
+        *(motor->gpioDR_EN) &= ~motorPinsConsts[channel].EN.pinBitmask;
     }
-
     
     return 0;
 }
@@ -285,21 +416,17 @@ int8_t motor_setPower(uint8_t channel, int16_t power) {
 
     motor->power = power;
 
-    //FIX: Add the rest of the channels
-    if(channel != 0) {
-        return 0;
-    }
-
     if(power == 0) {
-        *REGISTER_PWM_0_PWMENABLE &= ~REGISTER_PWM_PWMENABLE_PWM0EN;
+        //ADD: Zero power behavior brake
+        *(motor->pwmEnable) &= ~motorPinsConsts[channel].PWM.pwmBitmask;
     } else {
-
         if(power > 0) {
-            *REGISTER_GPIO_F_GPIODR &= ~MOTOR_0_INB_PIN;
-            *REGISTER_GPIO_K_GPIODR |= MOTOR_0_INA_PIN;
+            *(motor->gpioDR_INA) |= motorPinsConsts[channel].INA.pinBitmask;
+            *(motor->gpioDR_INB) &= ~motorPinsConsts[channel].INB.pinBitmask;
+
         } else if(power < 0) {
-            *REGISTER_GPIO_F_GPIODR |= MOTOR_0_INB_PIN;
-            *REGISTER_GPIO_K_GPIODR &= ~MOTOR_0_INA_PIN;
+            *(motor->gpioDR_INA) &= ~motorPinsConsts[channel].INA.pinBitmask;
+            *(motor->gpioDR_INB) |= motorPinsConsts[channel].INB.pinBitmask;
 
             //If we didn't do this when we try to invert INT16_MIN we would just get INT16_MIN
             if(power == INT16_MIN) {
@@ -309,13 +436,19 @@ int8_t motor_setPower(uint8_t channel, int16_t power) {
             power = -power;
         }
 
+        // debugUART_printString("Setting power to: ");
+        // debugUART_printWord(power);
+        // debugUART_printString(" at address 0x");
+        // debugUART_printWordHex((uint32_t) motor->pwmCMPn);
+        // debugUART_printChar('\n');
+
         //Scale the power int16_t for the pwm compariator to be within the range of 0 to (PWM_RELOAD_VALUE - 1). The max value is (PWM_RELOAD_VALUE - 1) because if the 
         // comparator is set to the reload value then the PWM signal is always set to whatever the reload event sets it to. In this case the reload
         // event sets the pin high. We exploit this fact to allow for full power operation, but because the counter can only count down and reset even must
         // set the signal high the counter value has to be the opposite of the desired power. We use the PWMENABLE register to disable the PWM signal and set it low
         // when needed.
-        *REGISTER_PWM_0_PWM0CMPA = (PWM_RELOAD_VALUE - 1) - power * ((uint32_t) (PWM_RELOAD_VALUE - 1)) / INT16_MAX;
-        *REGISTER_PWM_0_PWMENABLE |= REGISTER_PWM_PWMENABLE_PWM0EN;
+        *(motor->pwmCMPn) = (PWM_RELOAD_VALUE - 1) - power * ((uint32_t) (PWM_RELOAD_VALUE - 1)) / INT16_MAX;
+        *(motor->pwmEnable) |= motorPinsConsts[channel].PWM.pwmBitmask;
     }
 
     return 0;

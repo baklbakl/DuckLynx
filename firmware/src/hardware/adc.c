@@ -232,9 +232,9 @@ void adc_checkBatteryVoltage(uint32_t currentTime) {
         //Problem!!!
     }
 
-    debugUART_printString("Battery voltage: ");
-    debugUART_printWord(outValue);
-    debugUART_printChar('\n');
+    // debugUART_printString("Battery voltage: ");
+    // debugUART_printWord(outValue);
+    // debugUART_printChar('\n');
 
     if(led_mode == LED_MODE_NO_BATTERY && outValue > ADC_LOW_BATTERY_CUTOFF_VOLTAGE) {
         //The stock firmware doesn't restore its LED state after power is restored, but we do because I think it's a handy feature
