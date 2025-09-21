@@ -52,6 +52,7 @@ Big zener diode for motor drives D4 1SMB5931BT3G
 Tiny ESD diode D5 PESD15VS1UL
 ESD Protection E5U Chip CPDV5-5V0U
 ESD Protection E3V3 Chip CPDV5-3V3UP
+Status LED D1 LTST-G683GEBW
 
 #### Transistors
 Reverse current protection BIG mosfet FDD9409-F085
@@ -86,19 +87,16 @@ bM Fuse - 0.5A hold current - 0ZCK0050FF2E
 D2
 D3 Maybe ESD Protection Diode LittelFuse SMF17A
 
-Don't ask - doesn't matter:
-LED 3825 package. About 1.6 mm tall. 6 pins
-
 #### To order
 XT30
-3 pin JST
+3 pin JST - B3B-PH-K-S
 50 ohm 1% 0603 resistor for LED (check)
 More MCUs
+JTAG connectors
 Motor controllers?
 
 ### Datasheet questions
-- External Ram? 
-- How much does bit banding help performance?
+- How much does bit banding help performance - doesn't
 - Instrumentation Trace Macrocell (ITM) for support of printf style debugging
 – Embedded Trace Macrocell (ETM) for instruction trace capture
 – Trace Port Interface Unit (TPIU) for bridging to a Trace Port Analyzer
@@ -131,27 +129,18 @@ Ideas:
     - Up the RHSP baud rate
     - Remove message / reference number
     - Motion read/write packet that sends new motor powers and retrieves encoder positions, battery current, battery voltage, and anything else important.
+    - Octoquad
 
-Implement motor DEKA commands
-    mode
-    encoder
-    encoder reset
-Add voltage too low to run motors failsafe
-  Does the stock firmware stop trying to run the motors if the 12 is removed while they are running?
-Add RHSP timeout
-Setup the automatic LED
-
+Setup flashing via UART. See https://github.com/REVrobotics/node-expansion-hub-ftdi/blob/main/src/EnterFirmwareUpdateMode.cc
+Check that all of the hardware initialization explicitly disables the hardware before making changes
 Add motor controller fault monitoring
 Coulomb counting for battery state of charge
 Enable 5V
-Check that all of the hardware initialization explicitly disables the hardware before making changes
 Add servo RHSP commands
 Update this document to match the schematic
 Print out reset cause (page 254) on reset
 Print out hard fault cause
 WFI instruction to wait for an interrupt instead of a tiny loop 
-Setup flashing via UART. See https://github.com/REVrobotics/node-expansion-hub-ftdi/blob/main/src/EnterFirmwareUpdateMode.cc
-Make the button switch wifi bands - no idea how to do that - probably not nessisary as the android header has the button broken out to it
 
 ### Done
 RHSP
@@ -166,6 +155,9 @@ RHSP
     Implement the address set command
     Implement important parts of ADC DEKA command
     Implement version DEKA commands
+    encoder command
+    encoder reset command
+    Add RHSP timeout
 
 Enable faults
     See page 114 for what faults exist.
@@ -192,6 +184,8 @@ Find out what is in User Registers 1-4 - nothing
 Enable main oscillator verification - doesn't work - see errata
 Update the schematic with the new part numbers from rev
 Check if the RC will send another packet before waiting for the response of the previous one - it will
+Add voltage too low to run motors failsafe
+Setup the automatic LED
 
 ### Won't do
 Make the button put the device into rom bootloader mode. Check bootcfg register on page 594 - the button isn't physically hooked up to the pin that the BOOTCFG register is configured to use. BOOTCFG should stay not be modified by DuckLynx, so it is impossible
@@ -200,6 +194,8 @@ Sleep mode while waiting to do something? - it will pause the core until it gets
   Make sure eeprom is done before doing so
   WFI instruction
   Maybe turn on auto clock gating so that it turns off unneeded peripherals?
+Make the button switch wifi bands - no idea how to do that - necessary as the android header has the button broken out to it
+Implement motor mode command
 
 ### What to flash to a new chip
 EEPROM
@@ -498,23 +494,41 @@ Pin 6 - GND
 ```
 
 ### Failures
-#### 4
-RS485 B is shorted to ground
+To test:
+ - Motor ports in both directions
+ - Encoders
+ - Servos
+ - Analog in 0 - 3
+ - GPIO In
+ - GPIO Out high and low
+ - LED White
+ - RS485
+ - I2C
+ 
+ - FTDI can reset MCU
+ - Bootloader work for programming
+ - Button works?
 
-#### 3 
-Analog 3.3v / Digital 3.3v / I2C 3.3v / Encoder 3.3v
-SCL 3
-Upper external UART Rx
-Lower external UART Rx
+#### 1
+Fixed:
+ - Blown MCU
 
-#### MCU replacment
-To check
-  All ESD diodes
+#### MCU replacment test patent - #2
+SWD is routed to UART 2.
+  GND is GND
+  TX (Blue) is Clock
+  RX (White) is SWDIO
+
+Fixed
+  Blown MCU
+  Blue LED resistor
   Motor drives
 
+To check
+  All ESD diodes
+
 To fix
-  External clock shorted
-  Blue LED resistor
+  Blue LED
   Red LED
 
 Won't fix
@@ -523,7 +537,18 @@ Won't fix
   Software encoder PF4
   Software encoder PF5
   RS485 Plug #2
-  UART 2
+  UART 2 - repurpsoed
+
+#### 3 
+Analog 3.3v / Digital 3.3v / I2C 3.3v / Encoder 3.3v
+SCL 3
+Upper external UART Rx
+Lower external UART Rx
+
+#### 4
+RS485 B is shorted to ground
+
+
 
 ### Serial numbers
 Serial number is the serial number of the FTDI

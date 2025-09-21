@@ -1,4 +1,5 @@
 
+#include "hardware/encoder.h"
 #include "other.h"
 #include "hardware/adc.h"
 #include "debugUART.h"
@@ -41,6 +42,10 @@ const Initializable initalizables[] = {
     {
         "Motor",
         motor_init
+    },
+    {
+        "Encoder",
+        encoder_init
     },
     {
         "RHSP Decoder",

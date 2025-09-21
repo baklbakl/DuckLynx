@@ -57,6 +57,8 @@ static const uint8_t REGISTER_SYSCTL_PERIPHCTL_GPIO_OFFSET = 0x08;
 static const uint8_t REGISTER_SYSCTL_PERIPHCTL_UART_OFFSET = 0x18;
 static const uint8_t REGISTER_SYSCTL_PERIPHCTL_WGPTM_OFFSET = 0x5C;
 
+static const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_G_INSTANCEMASK = 0b1 << 6;
+static const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK = 0b1 << 7;
 static const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_M_INSTANCEMASK = 0b1 << 11;
 
 //
@@ -82,6 +84,8 @@ static const uint32_t REGISTER_GPIO_AMSEL_OFFSET = 0x528;
 
 static const uint32_t REGISTER_GPIO_GPIOPCTL_UART = 0x1;
 
+static const uint32_t REGISTER_GPIO_G_BASE = REGISTER_GPIO_BASE + 0x5A000;
+static const uint32_t REGISTER_GPIO_H_BASE = REGISTER_GPIO_BASE + 0x5B000;
 static const uint32_t REGISTER_GPIO_M_BASE = REGISTER_GPIO_BASE + 0x5F000;
 
 //
@@ -130,5 +134,17 @@ static const uint32_t REGISTER_DMA_CHANNEL_9 = 0b1 << 9;
 
 static volatile uint32_t * const REGISTER_DMA_DMACHIS = (uint32_t *)(REGISTER_DMA_BASE + 0x504);
 
-#endif
+//
+// QEI
+//
 
+static const uint32_t REGISTER_QEI_BASE = 0x4002C000;
+static const uint32_t REGISTER_QEI_QEIPOS_OFFSET = 0x8;
+
+static const uint32_t REGISTER_QEI_0_BASE = REGISTER_QEI_BASE + 0;
+static volatile uint32_t * const REGISTER_QEI_0_QEIPOS = (uint32_t *)(REGISTER_QEI_0_BASE + REGISTER_QEI_QEIPOS_OFFSET);
+
+static const uint32_t REGISTER_QEI_1_BASE = REGISTER_QEI_BASE + 0x1000;
+static volatile uint32_t * const REGISTER_QEI_1_QEIPOS = (uint32_t *)(REGISTER_QEI_1_BASE + REGISTER_QEI_QEIPOS_OFFSET);
+
+#endif

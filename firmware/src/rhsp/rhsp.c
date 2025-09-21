@@ -2,6 +2,7 @@
 
 #include <stdint.h>
 
+#include "hardware/encoder.h"
 #include "hardware/motor.h"
 #include "hardware/register.h"
 #include "debugUART.h"
@@ -264,6 +265,7 @@ volatile uint32_t rhsp_lastCommandTime = UINT32_MAX;
 
 uint8_t phoneChargingEnabled = 0;
 
+//FIX: Make sure that all packet length checks are in place and use equals where possible
 RHSP_PARSE_RESULT handlePacket(void) {
     debugUART_printString("Packet received: ");
     printBuffer();
@@ -344,6 +346,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_SET_MODULE_LED_PATTERN:
+        //ADD: Packet length check to make sure that the pattern packet is not too short or long
         if(packet->decoded.packetSize % sizeof(led_PatternStep) != 0) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
         }
@@ -453,7 +456,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
     // DEKA Interface Commands
     //
 
-    //ADD: Implement DEKA commands
+    //ADD: Implement bulk read
     case RHSP_COMMAND_DEKA_GET_BULK_INPUT_DATA:
     case RHSP_COMMAND_DEKA_SET_BULK_OUTPUT_DATA:
         sendNACK(RHSP_NACK_COMMAND_IMPLEMENTATION_PENDING);
@@ -497,7 +500,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_DEKA_SET_MOTOR_CHANNEL_ENABLE:
-        if(packet->decoded.packetSize < 2) {
+        if(packet->decoded.packetSize != 2) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
             break;
         }
@@ -529,7 +532,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_DEKA_GET_MOTOR_CHANNEL_ENABLE:
-        if(packet->decoded.packetSize < 1) {
+        if(packet->decoded.packetSize != 1) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
             break;
         }
@@ -546,7 +549,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_DEKA_SET_MOTOR_CONSTANT_POWER:
-        if(packet->decoded.packetSize < 3) {
+        if(packet->decoded.packetSize != 3) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
             break;
         }
@@ -561,7 +564,7 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
         
     case RHSP_COMMAND_DEKA_GET_MOTOR_CONSTANT_POWER:
-        if(packet->decoded.packetSize < 1) {
+        if(packet->decoded.packetSize != 1) {
             sendNACK(RHSP_NACK_PARAM_0_WRONG);
             break;
         }
@@ -605,7 +608,55 @@ RHSP_PARSE_RESULT handlePacket(void) {
         break;
 
     case RHSP_COMMAND_DEKA_RESET_MOTOR_ENCODER:
+        if(packet->decoded.packetSize != 1) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        uint8_t encoderChannelReset = packet->decoded.payload[0];
+        if(encoderChannelReset > 3) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+            
+        if(encoderChannelReset == 0) {
+            *REGISTER_QEI_0_QEIPOS = ENCODER_RESET_VALUE;
+        } else if(encoderChannelReset == 3) {
+            *REGISTER_QEI_1_QEIPOS = ENCODER_RESET_VALUE;
+        }
+
+        sendACK();
+        break;
+
     case RHSP_COMMAND_DEKA_GET_MOTOR_ENCODER_POSITION:
+        if(packet->decoded.packetSize != 1) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        uint8_t encoderChannel = packet->decoded.payload[0];
+        if(encoderChannel > 3) {
+            sendNACK(RHSP_NACK_PARAM_0_WRONG);
+            break;
+        }
+
+        packet->decoded.packetSize = 4;
+
+        int32_t result = 0;
+        if(encoderChannel == 0) {
+            result = *REGISTER_QEI_0_QEIPOS - ENCODER_RESET_VALUE;
+
+        //send dummy data for channels one and two as we don't support software encoders
+        } else if(encoderChannel == 1 || encoderChannel == 2) {
+            result = 0;
+        } else if(encoderChannel == 3) {
+            result = *REGISTER_QEI_1_QEIPOS - ENCODER_RESET_VALUE;
+        }
+
+        *((int32_t *)(packet->decoded.payload)) = result;
+
+        sendReadPacket();
+        break;
 
     case RHSP_COMMAND_DEKA_SET_MOTOR_TARGET_VELOCITY:
     case RHSP_COMMAND_DEKA_GET_MOTOR_TARGET_VELOCITY:

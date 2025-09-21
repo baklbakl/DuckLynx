@@ -1,7 +1,7 @@
 #include "hardware/motor.h"
 #include "debugUART.h"
 #include "hardware/gpio.h"
-#include "hardware/register.h"5
+#include "hardware/register.h"
 #include "sysctl.h"
 
 //
@@ -15,8 +15,6 @@ const uint32_t REGISTER_SYSCTL_RCC_PWMDIV_DIV_64 = 0x5 << REGISTER_SYSCTL_RCC_PW
 const uint32_t REGISTER_SYSCTL_RCC_USEPWMDIV = 0b1 << 20;
 
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_F_INSTANCEMASK = 0b1 << 5;
-const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_G_INSTANCEMASK = 0b1 << 6;
-const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_H_INSTANCEMASK = 0b1 << 7;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_K_INSTANCEMASK = 0b1 << 9;
 const uint32_t REGISTER_SYSCTL_PERIPHCTL_GPIO_N_INSTANCEMASK = 0b1 << 12;
 
@@ -33,8 +31,6 @@ const uint32_t REGISTER_GPIO_GPIOPCTL_H_PWM_M0 = 0x4;
 const uint32_t REGISTER_GPIO_GPIOPCTL_G_PWM_M1 = 0x5;
 
 const uint32_t REGISTER_GPIO_F_BASE = REGISTER_GPIO_BASE + 0x59000;
-const uint32_t REGISTER_GPIO_G_BASE = REGISTER_GPIO_BASE + 0x5A000;
-const uint32_t REGISTER_GPIO_H_BASE = REGISTER_GPIO_BASE + 0x5B000;
 const uint32_t REGISTER_GPIO_K_BASE = REGISTER_GPIO_BASE + 0x5D000;
 const uint32_t REGISTER_GPIO_N_BASE = REGISTER_GPIO_BASE + 0x60000;
 

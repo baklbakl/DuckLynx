@@ -25,7 +25,7 @@
 		)
 		(uuid "9d25f06a-3a50-4826-8d98-146792c8a62b")
 	)
-	(text_box "TODO:\n - Recheck all component connections - total pain to do, so I won't be doing it\n \n \n"
+	(text_box "TODO:\n - Recheck all component connections - total pain to do, so I won't be doing it\n - Enter component part numbers from info.md into the schematic\n \n \n"
 		(exclude_from_sim no)
 		(at 7.62 7.62 0)
 		(size 73.66 193.04)

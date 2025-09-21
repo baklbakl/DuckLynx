@@ -23,15 +23,16 @@ set(SRC_FILES
         src/debugUART.c
         src/logo.c
         src/other.c
-
-        src/hardware/led.c
-        src/hardware/eeprom.c
-        src/hardware/gpio.c
-        src/hardware/uart.c
+        
+        src/hardware/adc.c
         src/hardware/dma.c
-        src/hardware/adc.c 
+        src/hardware/eeprom.c
+        src/hardware/encoder.c
+        src/hardware/gpio.c
+        src/hardware/led.c
         src/hardware/motor.c
         src/hardware/timer.c
+        src/hardware/uart.c
         src/hardware/sysctl.c
         
         src/rhsp/rhsp.c

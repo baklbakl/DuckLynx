@@ -81,6 +81,71 @@ Only ever a reply
 [0] NACK Code
 ```
 
+#### NACK Codes
+```
+// 0-9 are for params
+0 = "Parameter #0 out of range"
+1 = "Parameter #1 out of range"
+2 = "Parameter #2 out of range"
+3 = "Parameter #3 out of range"
+4 = "Parameter #4 out of range"
+5 = "Parameter #5 out of range"
+6 = "Parameter #6 out of range"
+7 = "Parameter #7 out of range"
+8 = "Parameter #8 out of range"
+9 = "Parameter #9 out of range"
+
+// 10-19 are for GPIO output
+10 = "GPIO #0 not configured for output"
+11 = "GPIO #1 not configured for output"
+12 = "GPIO #2 not configured for output"
+13 = "GPIO #3 not configured for output"
+14 = "GPIO #4 not configured for output"
+15 = "GPIO #5 not configured for output"
+16 = "GPIO #6 not configured for output"
+17 = "GPIO #7 not configured for output"
+18 = "No GPIO pins configured for output"
+// NACK 19 is reserved
+
+// 20-29 are for GPIO input
+20 = "GPIO #0 not configured for input"
+21 = "GPIO #1 not configured for input"
+22 = "GPIO #2 not configured for input"
+23 = "GPIO #3 not configured for input"
+24 = "GPIO #4 not configured for input"
+25 = "GPIO #5 not configured for input"
+26 = "GPIO #6 not configured for input"
+27 = "GPIO #7 not configured for input"
+28 = "No GPIO pins configured for input"
+// NACK 29 is reserved
+
+// 30-39 are for servos
+30 = "Servo not fully configured before enabled"
+31 = "Battery voltage too low to run servo."
+// NACKs 32-39 are reserved
+
+// 40-49 are for i2c
+40 = "I2C Master Busy (command rejected)"
+41 = "I2C Operation in progress (poll again for completion status)"
+42 = "I2C No results pending"
+43 = "I2C Query mismatch (query doesn’t match last operation)"
+44 = "I2C Timeout SDA stuck"
+45 = "I2C Timeout SCK stuck"
+46 = "I2C Timeout"
+// NACKs 47-49 are reserved
+
+// 50-59 are for motors
+50 = "Motor not fully configured for selected mode before enabled"
+51 = "Command not valid for selected motor mode"
+52 = "Battery voltage too low to run motor."
+// NACKs 53-59 are reserved
+
+//There are a few codes at the end for debugging
+253 = "Command implementation pending (software diagnostic; command is known and properly delivered but implementation is not complete)"
+254 = "Command routing error (software diagnostic; command is known but not handled by receiving subsystem)"
+255 = "Packet Type ID unknown (protocol failure; no unknown commands should be sent if discovery was performed properly)"
+```
+
 <!-- ADD: list of NACK codes -->
 
 ### GET_MODULE_STATUS = 0x7f03
@@ -116,7 +181,7 @@ For the lynx at least, maybe not the servo hub. After reset only the Device Rese
 Used to prevent the hub from timing out and going into fail safe mode
 
 ### FAIL_SAFE = 0x7f05
-Tells the hub to disable all motion like an e stop
+Tells the hub to disable all motion like an e-stop
 
 ### SET_NEW_MODULE_ADDRESS = 0x7f06
 Tells a hub to change its address
@@ -140,7 +205,6 @@ Checks if a hub supports a specific interface
 
 ### START_DOWNLOAD = 0x7f08
 ### DOWNLOAD_CHUNK = 0x7f09
-
 ### SET_MODULE_LED_COLOR = 0x7f0a
 Sets the color of the multicolor LED on the lynx
 
@@ -183,6 +247,7 @@ Sends a list of times and colors for the led to follow. The packet may contain u
 ### GET_MODULE_LED_PATTERN = 0x7f0d
 Gets the current pattern being displayed. Can also not transmit all 16 steps
 <!-- TEST: Does this pattern include the low power or connected one? -->
+<!-- TEST: Doesn't seem to work on stock firmware with librhsp. Check RC app -->
 
 #### Response Payload
 See `Step` from SET_MODULE_LED_PATTERN
@@ -194,7 +259,6 @@ See `Step` from SET_MODULE_LED_PATTERN
 ```
 
 ### DEBUG_LOG_LEVEL = 0x7f0e
-
 ### DISCOVERY = 0x7f0f
 This packet is sent by the controller when it wants to find all of the hubs that are connected. First the controller sends a discovery packet to the broadcast address. The parent hub then sends back its address by replying to the discovery packet, but changing the src address from the broadcast address to the one of the parent hub. The parent hub also then proceeds to send out a discovery packet to every possible child address (0-254, but not the address of the parent (verify)) over RS485 and forwards their responses back to the controller.
 
@@ -277,6 +341,12 @@ Get if a motor channel is enabled or disabled
 ### SET_MOTOR_CHANNEL_CURRENT_ALERT_LEVEL = 0x0C
 ### GET_MOTOR_CHANNEL_CURRENT_ALERT_LEVEL = 0x0D
 ### RESET_MOTOR_ENCODER = 0x0E
+Resets the encoder position back to zero
+#### Payload
+```
+[0] Motor Channel
+```
+
 ### SET_MOTOR_CONSTANT_POWER = 0x0F
 Sets the power of a motor. In some modes this must be positive.
 #### Payload
@@ -303,6 +373,17 @@ Gets the power of a motor
 ### GET_MOTOR_TARGET_POSITION = 0x14
 ### IS_MOTOR_AT_TARGET = 0x15
 ### GET_MOTOR_ENCODER_POSITION = 0x16
+Gets the encoder position
+#### Payload
+```
+[0] Motor Channel
+```
+
+### Response Payload
+```
+[0..3] (int32_t) counts
+```
+
 ### SET_MOTOR_PID_CONTROL_LOOP_COEFFICIENTS = 0x17
 ### GET_MOTOR_PID_CONTROL_LOOP_COEFFICIENTS = 0x18
 ### SET_PWM_CONFIGURATION = 0x19
@@ -348,7 +429,7 @@ Gets the version of the hub
 #### Response Payload
 ```
 [0] String length
-[1..String Length] The version string. Typically looks like "HW: 20, Maj: 1, Min: 8, Eng: 2". Should not be null terminated <!-- TEST: does the string have to be null terminated for the RC app -->
+[1..String Length] The version string. Typically looks like "HW: 20, Maj: 1, Min: 8, Eng: 2". Should not be null terminated
    HW is the hardware revision. In the case 20 means 2.0
    Maj is the major version (1.x.x) in a semantic version
    Min is the minor version (x.8.x) in a semantic version
